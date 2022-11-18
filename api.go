@@ -1,54 +1,44 @@
-package ncgo
+package ncgore
 
 import (
-	"errors"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
 )
 
-type Api struct {
-	BaseUrl     string
-	Client      *http.Client
-	Credentials *Credentials
+type Api interface {
+	Login(auth Auth) error
+	Search(params *SearchParams) ([]*SearchResult, error)
 }
 
-func NewApi(client *http.Client, baseUrl string, credentials *Credentials) *Api {
-	api := &Api{
-		Client:      client,
-		BaseUrl:     baseUrl,
-		Credentials: credentials,
+type api struct {
+	baseUrl string
+	client  *http.Client
+}
+
+func New(client *http.Client, baseUrl string) Api {
+	initCookieJar(client)
+	disableRedirect(client)
+	return &api{
+		client:  client,
+		baseUrl: baseUrl,
 	}
-	api.disableRedirect()
-	return api
 }
 
-func NewDefaultApi(baseUrl string, credentials *Credentials) *Api {
-	jar, _ := cookiejar.New(nil)
+func Default(baseUrl string) Api {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
-		Jar:     jar,
 	}
-	return NewApi(client, baseUrl, credentials)
+	return New(client, baseUrl)
 }
 
-func (a *Api) Login() error {
-	res, err := a.Client.PostForm(a.BaseUrl+UrlLogin, a.Credentials.ToFormValues())
-	if err != nil {
-		return err
-	}
-	if isInvalidLogin(res) {
-		return errors.New(ErrLoginInvalidCredentials)
-	}
-	if isSuccessfulLogin(res) {
-		return nil
-
-	}
-	return errors.New(ErrLoginUnexpectedResponse)
+func initCookieJar(client *http.Client) {
+	jar, _ := cookiejar.New(nil)
+	client.Jar = jar
 }
 
-func (a *Api) disableRedirect() {
-	a.Client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+func disableRedirect(client *http.Client) {
+	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}
 }

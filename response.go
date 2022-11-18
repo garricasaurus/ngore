@@ -1,20 +1,20 @@
-package ncgo
+package ncgore
 
 import (
 	"net/http"
 	"strings"
 )
 
-func isLoggedOut(res *http.Response) bool {
-	return isRedirectToLocation(res, LocationLogin)
+func isLoginRequired(res *http.Response) bool {
+	return isRedirectToLocation(res, locationLogin)
 }
 
 func isSuccessfulLogin(res *http.Response) bool {
-	return isRedirectToLocation(res, LocationIndex)
+	return isRedirectToLocation(res, locationIndex)
 }
 
 func isInvalidLogin(res *http.Response) bool {
-	return isRedirectToLocation(res, LocationLoginProblem)
+	return isRedirectToLocation(res, locationLoginProblem)
 }
 
 func isRedirectToLocation(res *http.Response, location string) bool {

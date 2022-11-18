@@ -1,0 +1,6 @@
+git.okki.hu/garric/nc-go v0.0.0-20221118093500-269f65ab2861 h1:71jbd65+051uaLi0jUfZVdjigSGxgFXugAq6PskHOQg=
+git.okki.hu/garric/nc-go v0.0.0-20221118093500-269f65ab2861/go.mod h1:2J2zV/bKVIkki5yOwptfqckAbYRZ5p0RazpygIQmV1w=
+git.okki.hu/garric/ncgore v0.0.0-20221124100806-5b485cb42803 h1:pjOPRmBIWPNPPQEO2Ef5SLOFddrn2mu5U7FVQcHedeI=
+git.okki.hu/garric/ncgore v0.0.0-20221124100806-5b485cb42803/go.mod h1:45DqrcL6EukbeI9Ir/FrJyTdqwHzsvUxqc+HSvygwrE=
+golang.org/x/net v0.2.0 h1:sZfSu1wtKLGlWI4ZZayP0ck9Y73K1ynO6gqzTdBVdPU=
+golang.org/x/net v0.2.0/go.mod h1:KqCZLdyyvdV855qA2rE3GC2aiw5xGR5TEjj8smXukLY=
