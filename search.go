@@ -2,6 +2,7 @@ package ncgore
 
 import (
 	"errors"
+	"fmt"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/url"
@@ -15,6 +16,9 @@ func (a *api) Search(params *SearchParams) ([]*SearchResult, error) {
 	}
 	if isLoginRequired(res) {
 		return nil, errors.New(errUserNotLoggedIn)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(errSearchUnexpectedResponseCode, res.StatusCode)
 	}
 	return parseSearchResults(res)
 }
