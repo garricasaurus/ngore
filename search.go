@@ -29,17 +29,21 @@ func parseSearchResults(res *http.Response) ([]*SearchResult, error) {
 		return nil, err
 	}
 	result := make([]*SearchResult, 0)
-	elements := GetElementsByClass(doc, "torrent_txt")
-	for _, element := range elements {
-		a := GetFirstChild(element, "a")
+	nodes := GetElementsByClass(doc, "box_torrent")
+	for _, node := range nodes {
+		sr := &SearchResult{}
+		txt := GetElementsByClass(node, "torrent_txt")
+		if len(txt) < 1 {
+			continue
+		}
+		a := GetFirstChild(txt[0], "a")
 		if a != nil {
 			title, ok := findAttr(a, "title")
 			if ok {
-				result = append(result, &SearchResult{
-					Title: title,
-				})
+				sr.Title = title
 			}
 		}
+		result = append(result, sr)
 	}
 	return result, nil
 }
