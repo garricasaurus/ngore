@@ -20,7 +20,9 @@ func TestGetElementsByClass(t *testing.T) {
 		<div>
 			<div id="elem1" class="foo" />
 			<div class="bar" />
-			<div><p id="elem2" class="foo">Text</p></div>
+			<div>
+				<p id="elem2" class="foo">Text</p>
+			</div>
 		</div>`)
 
 		nodes := GetElementsByClass(doc, "foo")
@@ -62,18 +64,18 @@ func TestGetFirstChild(t *testing.T) {
 	root := GetElementById(doc, "root")
 
 	t.Run("find first matching child node", func(t *testing.T) {
-		n := GetFirstChild(root, "a")
+		n := GetFirstChildWithTagName(root, "a")
 		assert.Equal(t, "one", getId(n))
 	})
 
 	t.Run("no child nodes", func(t *testing.T) {
 		doc := mustParse(t, `<div id="root" />`)
 		root := GetElementById(doc, "root")
-		assert.Nil(t, GetFirstChild(root, "a"))
+		assert.Nil(t, GetFirstChildWithTagName(root, "a"))
 	})
 
 	t.Run("no matching child node", func(t *testing.T) {
-		assert.Nil(t, GetFirstChild(root, "p"))
+		assert.Nil(t, GetFirstChildWithTagName(root, "p"))
 	})
 
 }

@@ -11,6 +11,7 @@ type Params struct {
 
 type Result struct {
 	Title    string
+	AltTitle string
 	Uploaded string
 	Size     string
 	Health   string

@@ -6,19 +6,19 @@ import (
 
 type matcher func(n *html.Node) bool
 
-func GetElementsByClass(n *html.Node, className string) []*html.Node {
-	return getElements(n, func(n *html.Node) bool {
-		return hasClass(n, className)
-	})
-}
-
 func GetElementById(n *html.Node, id string) *html.Node {
 	return traverse(n, func(n *html.Node) bool {
 		return hasId(n, id)
 	})
 }
 
-func GetFirstChild(n *html.Node, tag string) *html.Node {
+func GetElementsByClass(n *html.Node, className string) []*html.Node {
+	return getElements(n, func(n *html.Node) bool {
+		return hasClass(n, className)
+	})
+}
+
+func GetFirstChildWithTagName(n *html.Node, tag string) *html.Node {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		if c.Type == html.ElementNode && c.Data == tag {
 			return c
