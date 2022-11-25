@@ -1,74 +1,15 @@
-package ncgore
+package search
 
-import (
-	"errors"
-	"fmt"
-	"golang.org/x/net/html"
-	"net/http"
-	"net/url"
-	"strconv"
-)
-
-func (a *api) Search(params *SearchParams) ([]*SearchResult, error) {
-	res, err := a.client.PostForm(a.baseUrl+urlSearch, searchForm(params))
-	if err != nil {
-		return nil, err
-	}
-	if isLoginRequired(res) {
-		return nil, errors.New(errUserNotLoggedIn)
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(errSearchUnexpectedResponseCode, res.StatusCode)
-	}
-	return parseSearchResults(res)
-}
-
-func parseSearchResults(res *http.Response) ([]*SearchResult, error) {
-	doc, err := html.Parse(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := make([]*SearchResult, 0)
-	nodes := GetElementsByClass(doc, "box_torrent")
-	for _, node := range nodes {
-		sr := &SearchResult{}
-		txt := GetElementsByClass(node, "torrent_txt")
-		if len(txt) < 1 {
-			continue
-		}
-		a := GetFirstChild(txt[0], "a")
-		if a != nil {
-			title, ok := findAttr(a, "title")
-			if ok {
-				sr.Title = title
-			}
-		}
-		result = append(result, sr)
-	}
-	return result, nil
-}
-
-type SearchParams struct {
+type Params struct {
 	SearchPhrase string
-	Field        SearchField
-	Category     SearchCategory
+	Field        Field
+	Category     Category
 	SortField    SortField
 	SortMode     SortMode
 	Page         int
 }
 
-func searchForm(s *SearchParams) url.Values {
-	return url.Values{
-		"mire":      {s.SearchPhrase},
-		"miben":     {s.Field.String()},
-		"tipus":     {s.Category.String()},
-		"miszerint": {s.SortField.String()},
-		"hogyan":    {s.SortMode.String()},
-		"oldal":     {strconv.Itoa(s.Page + 1)},
-	}
-}
-
-type SearchResult struct {
+type Result struct {
 	Title    string
 	Uploaded string
 	Size     string
@@ -77,16 +18,16 @@ type SearchResult struct {
 	Peers    string
 }
 
-type SearchField int
+type Field int
 
 const (
-	Name SearchField = iota
+	Name Field = iota
 	Description
 	Imdb
 	Label
 )
 
-func (s SearchField) String() string {
+func (s Field) String() string {
 	switch s {
 	case Name:
 		return "name"
@@ -101,10 +42,10 @@ func (s SearchField) String() string {
 	}
 }
 
-type SearchCategory int
+type Category int
 
 const (
-	MovieSdEn SearchCategory = iota
+	MovieSdEn Category = iota
 	MovieSdHu
 	MovieDvdEn
 	MovieDvdHu
@@ -138,7 +79,7 @@ const (
 	AllOwn
 )
 
-func (s SearchCategory) String() string {
+func (s Category) String() string {
 	switch s {
 	case MovieSdEn:
 		return "xvid"

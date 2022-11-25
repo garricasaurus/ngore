@@ -1,14 +1,20 @@
 package ncgore
 
 import (
+	"errors"
+	"fmt"
+	"git.okki.hu/garric/ncgore/internal"
+	"git.okki.hu/garric/ncgore/login"
+	"git.okki.hu/garric/ncgore/search"
+	"golang.org/x/net/html"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
 )
 
 type Api interface {
-	Login(auth Auth) error
-	Search(params *SearchParams) ([]*SearchResult, error)
+	Login(auth login.Auth) error
+	Search(params *search.Params) ([]*search.Result, error)
 }
 
 type api struct {
@@ -30,6 +36,42 @@ func Default(baseUrl string) Api {
 		Timeout: 10 * time.Second,
 	}
 	return New(client, baseUrl)
+}
+
+func (a *api) Login(auth login.Auth) error {
+	if auth.User() == "" || auth.Pass() == "" {
+		return errors.New(internal.ErrLoginMissingCredentials)
+	}
+	res, err := a.client.PostForm(a.baseUrl+internal.UrlLogin, internal.AuthForm(auth))
+	if err != nil {
+		return err
+	}
+	if internal.IsInvalidLogin(res) {
+		return errors.New(internal.ErrLoginInvalidCredentials)
+	}
+	if internal.IsSuccessfulLogin(res) {
+		return nil
+
+	}
+	return errors.New(internal.ErrLoginUnexpectedResponse)
+}
+
+func (a *api) Search(params *search.Params) ([]*search.Result, error) {
+	res, err := a.client.PostForm(a.baseUrl+internal.UrlSearch, internal.SearchForm(params))
+	if err != nil {
+		return nil, err
+	}
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(internal.ErrSearchUnexpectedResponseCode, res.StatusCode)
+	}
+	doc, err := html.Parse(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return search.ParseResults(doc)
 }
 
 func initCookieJar(client *http.Client) {

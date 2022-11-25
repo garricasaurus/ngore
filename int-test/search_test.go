@@ -2,6 +2,7 @@ package main
 
 import (
 	"git.okki.hu/garric/ncgore"
+	"git.okki.hu/garric/ncgore/search"
 	"testing"
 )
 
@@ -15,10 +16,10 @@ func TestSearch(t *testing.T) {
 
 	t.Run("search sd movies by name", func(t *testing.T) {
 
-		params := &ncgore.SearchParams{
+		params := &search.Params{
 			SearchPhrase: "hortobagy",
-			Field:        ncgore.Name,
-			Category:     ncgore.MovieSdHu,
+			Field:        search.Name,
+			Category:     search.MovieSdHu,
 		}
 
 		t.Logf("search for: %v", params)
@@ -34,7 +35,7 @@ func TestSearch(t *testing.T) {
 
 }
 
-func logResults(t *testing.T, res []*ncgore.SearchResult) {
+func logResults(t *testing.T, res []*search.Result) {
 	for i, r := range res {
 		t.Logf("[%d]: %v", i, r)
 	}

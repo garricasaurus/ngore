@@ -1,4 +1,4 @@
-package ncgore
+package parse
 
 import (
 	"golang.org/x/net/html"
@@ -25,6 +25,15 @@ func GetFirstChild(n *html.Node, tag string) *html.Node {
 		}
 	}
 	return nil
+}
+
+func FindAttr(n *html.Node, key string) (string, bool) {
+	for _, attr := range n.Attr {
+		if attr.Key == key {
+			return attr.Val, true
+		}
+	}
+	return "", false
 }
 
 func getElements(n *html.Node, p matcher) []*html.Node {
@@ -57,7 +66,7 @@ func traverse(n *html.Node, p matcher) *html.Node {
 
 func hasClass(n *html.Node, className string) bool {
 	if n.Type == html.ElementNode {
-		class, ok := findAttr(n, "class")
+		class, ok := FindAttr(n, "class")
 		if ok && class == className {
 			return true
 		}
@@ -67,19 +76,10 @@ func hasClass(n *html.Node, className string) bool {
 
 func hasId(n *html.Node, id string) bool {
 	if n.Type == html.ElementNode {
-		i, ok := findAttr(n, "id")
+		i, ok := FindAttr(n, "id")
 		if ok && i == id {
 			return true
 		}
 	}
 	return false
-}
-
-func findAttr(n *html.Node, key string) (string, bool) {
-	for _, attr := range n.Attr {
-		if attr.Key == key {
-			return attr.Val, true
-		}
-	}
-	return "", false
 }

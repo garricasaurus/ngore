@@ -1,4 +1,4 @@
-package ncgore
+package parse
 
 import (
 	"github.com/stretchr/testify/assert"
