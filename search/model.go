@@ -13,6 +13,7 @@ type Result struct {
 	Title    string
 	AltTitle string
 	Uploaded string
+	Uploader string
 	Size     string
 	Health   string
 	Seeds    string

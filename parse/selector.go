@@ -2,6 +2,7 @@ package parse
 
 import (
 	"golang.org/x/net/html"
+	"strings"
 )
 
 type matcher func(n *html.Node) bool
@@ -25,6 +26,18 @@ func GetFirstChildWithTagName(n *html.Node, tag string) *html.Node {
 		}
 	}
 	return nil
+}
+
+func GetText(n *html.Node) string {
+	sb := &strings.Builder{}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.TextNode {
+			sb.WriteString(strings.TrimSpace(c.Data))
+		} else {
+			sb.WriteString(" ")
+		}
+	}
+	return sb.String()
 }
 
 func FindAttr(n *html.Node, key string) (string, bool) {
