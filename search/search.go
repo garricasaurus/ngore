@@ -1,7 +1,7 @@
 package search
 
 import (
-	"git.okki.hu/garric/ncgore/parse"
+	"git.okki.hu/garric/ngore/parse"
 	"golang.org/x/net/html"
 )
 

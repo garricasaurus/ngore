@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"git.okki.hu/garric/ncgore/login"
-	"git.okki.hu/garric/ncgore/search"
+	"git.okki.hu/garric/ngore/login"
+	"git.okki.hu/garric/ngore/search"
 	"net/url"
 	"strconv"
 )

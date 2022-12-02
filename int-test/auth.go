@@ -1,7 +1,7 @@
 package main
 
 import (
-	"git.okki.hu/garric/ncgore/login"
+	"git.okki.hu/garric/ngore/login"
 	"os"
 )
 

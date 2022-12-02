@@ -1,14 +1,14 @@
 package main
 
 import (
-	"git.okki.hu/garric/ncgore"
-	"git.okki.hu/garric/ncgore/search"
+	"git.okki.hu/garric/ngore"
+	"git.okki.hu/garric/ngore/search"
 	"testing"
 )
 
 func TestSearch(t *testing.T) {
 
-	api := ncgore.Default(BaseUrl)
+	api := ngore.Default(BaseUrl)
 	err := api.Login(getAuthFromEnv())
 	if err != nil {
 		t.Fatalf("error during login: %s", err)

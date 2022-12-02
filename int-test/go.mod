@@ -1,8 +1,8 @@
-module nc-go-int-test
+module ngore-int-test
 
 go 1.19
 
 require (
-	git.okki.hu/garric/ncgore v0.0.0-20221124100806-5b485cb42803 // indirect
+	git.okki.hu/garric/ngore v0.0.0-20221202144127-4bab7d0c7b8e // indirect
 	golang.org/x/net v0.2.0 // indirect
 )

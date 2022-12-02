@@ -1,11 +1,11 @@
-package ncgore
+package ngore
 
 import (
 	"errors"
 	"fmt"
-	"git.okki.hu/garric/ncgore/internal"
-	"git.okki.hu/garric/ncgore/login"
-	"git.okki.hu/garric/ncgore/search"
+	"git.okki.hu/garric/ngore/internal"
+	"git.okki.hu/garric/ngore/login"
+	"git.okki.hu/garric/ngore/search"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/http/cookiejar"

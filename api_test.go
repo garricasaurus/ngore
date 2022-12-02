@@ -1,9 +1,9 @@
-package ncgore
+package ngore
 
 import (
-	"git.okki.hu/garric/ncgore/internal"
-	"git.okki.hu/garric/ncgore/login"
-	"git.okki.hu/garric/ncgore/search"
+	"git.okki.hu/garric/ngore/internal"
+	"git.okki.hu/garric/ngore/login"
+	"git.okki.hu/garric/ngore/search"
 	"net/http"
 	"net/http/httptest"
 	"testing"
