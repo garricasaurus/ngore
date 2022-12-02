@@ -10,6 +10,11 @@ type Params struct {
 }
 
 type Result struct {
+	Torrents []*Torrent
+	Page     *PageInfo
+}
+
+type Torrent struct {
 	Title    string
 	AltTitle string
 	Uploaded string
@@ -18,6 +23,16 @@ type Result struct {
 	Health   string
 	Seeds    string
 	Peers    string
+}
+
+type PageInfo struct {
+	Current int
+	Prev    int
+	Next    int
+}
+
+func (p *PageInfo) HasMore() bool {
+	return p.Current < p.Next
 }
 
 type Field int

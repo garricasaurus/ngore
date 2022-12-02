@@ -35,8 +35,9 @@ func TestSearch(t *testing.T) {
 
 }
 
-func logResults(t *testing.T, res []*search.Result) {
-	for i, r := range res {
+func logResults(t *testing.T, res *search.Result) {
+	t.Logf("page info: %v", res.Page)
+	for i, r := range res.Torrents {
 		t.Logf("[%d]: %v", i, r)
 	}
 }

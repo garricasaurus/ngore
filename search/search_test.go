@@ -9,7 +9,7 @@ import (
 
 func TestApi_Search(t *testing.T) {
 
-	t.Run("single match", func(t *testing.T) {
+	t.Run("parse single match", func(t *testing.T) {
 		doc := mustGetDocument(t, `
 		<div class="box_torrent">
 			<div class="box_alap_img">
@@ -60,28 +60,27 @@ func TestApi_Search(t *testing.T) {
 						class="feltolto_szin">Anonymous</span></a></div>
 			</div>
 		</div>`)
-		results, err := ParseResults(doc)
-		assert.NoError(t, err)
-		assert.Equal(t, 1, len(results))
+		results := ParseResponse(doc)
 
-		expected := &Result{
-			Title:    "A másik Göring - megosztott testvériség",
-			AltTitle: "The Other Goering - A Divided Brotherhood",
-			Health:   "++",
-			Peers:    "0",
-			Seeds:    "6",
-			Size:     "699.82 MiB",
-			Uploaded: "2021-06-10 08:00:19",
-			Uploader: "Anonymous",
+		expected := []*Torrent{
+			{
+				Title:    "A másik Göring - megosztott testvériség",
+				AltTitle: "The Other Goering - A Divided Brotherhood",
+				Health:   "++",
+				Peers:    "0",
+				Seeds:    "6",
+				Size:     "699.82 MiB",
+				Uploaded: "2021-06-10 08:00:19",
+				Uploader: "Anonymous",
+			},
 		}
-		assert.Equal(t, expected, results[0])
+		assert.Equal(t, expected, results.Torrents)
 	})
 
 	t.Run("no torrent boxes", func(t *testing.T) {
 		doc := mustGetDocument(t, `<div />`)
-		results, err := ParseResults(doc)
-		assert.NoError(t, err)
-		assert.Empty(t, results)
+		results := ParseResponse(doc)
+		assert.Empty(t, results.Torrents)
 	})
 
 	t.Run("no txt node", func(t *testing.T) {
@@ -89,11 +88,10 @@ func TestApi_Search(t *testing.T) {
 		<div class="box_torrent">
 			<div class="box_nagy"></div>
 		</div>`)
-		results, err := ParseResults(doc)
-		assert.NoError(t, err)
-		assert.Equal(t, 1, len(results))
-		assert.Equal(t, "", results[0].Title)
-		assert.Equal(t, "", results[0].AltTitle)
+		results := ParseResponse(doc)
+		assert.Equal(t, 1, len(results.Torrents))
+		assert.Equal(t, "", results.Torrents[0].Title)
+		assert.Equal(t, "", results.Torrents[0].AltTitle)
 	})
 
 	t.Run("missing title", func(t *testing.T) {
@@ -109,12 +107,9 @@ func TestApi_Search(t *testing.T) {
 				</div>				
 			</div>
 		</div>`)
-		results, err := ParseResults(doc)
-		if err != nil {
-			t.Fatal(err)
-		}
-		assert.NotEmpty(t, results)
-		assert.Equal(t, "", results[0].Title)
+		results := ParseResponse(doc)
+		assert.Equal(t, 1, len(results.Torrents))
+		assert.Equal(t, "", results.Torrents[0].Title)
 	})
 
 	t.Run("alt-title", func(t *testing.T) {
@@ -134,12 +129,9 @@ func TestApi_Search(t *testing.T) {
 					</div>				
 				</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Title)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Title)
 		})
 
 		t.Run("missing title attribute", func(t *testing.T) {
@@ -157,12 +149,9 @@ func TestApi_Search(t *testing.T) {
 					</div>				
 				</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Title)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Title)
 		})
 
 	})
@@ -174,22 +163,16 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_d2">test</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Health)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Health)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `<div class="box_torrent" />`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Health)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Health)
 		})
 
 		t.Run("missing content", func(t *testing.T) {
@@ -197,12 +180,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_d2" />
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Health)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Health)
 		})
 
 	})
@@ -214,22 +194,16 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_l2"><a href="#">test</a></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Peers)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Peers)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `<div class="box_torrent" />`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Peers)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Peers)
 		})
 
 		t.Run("missing href node", func(t *testing.T) {
@@ -237,12 +211,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_l2"></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Peers)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Peers)
 		})
 
 		t.Run("missing content", func(t *testing.T) {
@@ -250,12 +221,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_l2"><a href="#"></a></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Peers)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Peers)
 		})
 
 	})
@@ -267,24 +235,18 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_s2"><a href="#">test</a></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Seeds)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Seeds)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `
 			<div class="box_torrent">				
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Seeds)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Seeds)
 		})
 
 		t.Run("missing href node", func(t *testing.T) {
@@ -292,12 +254,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_s2"></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Seeds)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Seeds)
 		})
 
 		t.Run("missing data", func(t *testing.T) {
@@ -305,12 +264,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_s2"><a href="#"></a></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Seeds)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Seeds)
 		})
 
 	})
@@ -322,24 +278,18 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_meret2">test</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Size)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Size)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `
 			<div class="box_torrent">				
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Size)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Size)
 		})
 
 		t.Run("missing data", func(t *testing.T) {
@@ -347,12 +297,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_meret2"></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Size)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Size)
 		})
 
 	})
@@ -364,12 +311,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltoltve2">test</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Uploaded)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Uploaded)
 		})
 
 		t.Run("tags filtered from data", func(t *testing.T) {
@@ -377,24 +321,18 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltoltve2">test1<br/>test2</div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test1 test2", results[0].Uploaded)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test1 test2", results.Torrents[0].Uploaded)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `
 			<div class="box_torrent">
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Uploaded)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Uploaded)
 		})
 
 		t.Run("missing data", func(t *testing.T) {
@@ -402,12 +340,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltoltve2"></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Uploaded)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Uploaded)
 		})
 
 	})
@@ -419,24 +354,18 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltolto2"><span class="feltolto_szin">test</span></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "test", results[0].Uploader)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "test", results.Torrents[0].Uploader)
 		})
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := mustGetDocument(t, `
 			<div class="box_torrent">
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Uploader)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Uploader)
 		})
 
 		t.Run("missing span", func(t *testing.T) {
@@ -444,12 +373,9 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltolto2"></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Uploader)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Uploader)
 		})
 
 		t.Run("missing data", func(t *testing.T) {
@@ -457,12 +383,71 @@ func TestApi_Search(t *testing.T) {
 			<div class="box_torrent">
 				<div class="box_feltolto2"><span class="feltolto_szin"></span></div>
 			</div>`)
-			results, err := ParseResults(doc)
-			if err != nil {
-				t.Fatal(err)
+			results := ParseResponse(doc)
+			assert.Equal(t, 1, len(results.Torrents))
+			assert.Equal(t, "", results.Torrents[0].Uploader)
+		})
+
+	})
+
+	t.Run("paging", func(t *testing.T) {
+
+		t.Run("parse page info", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<a href="#"><strong>Első</strong></a>
+				| <a href="#"><strong>1-25</strong></a>
+				| <a href="#" id="pPa"><strong>26-50</strong></a>
+				| <span class="active_link"><strong>51-75</strong></span> 
+				| <a href="#" id="nPa"><strong>76-96</strong></a>
+				| <a href="#"><strong>Utolsó</strong></a>
+			</div>
+			`)
+			expected := &PageInfo{
+				Current: 3,
+				Prev:    2,
+				Next:    4,
 			}
-			assert.NotEmpty(t, results)
-			assert.Equal(t, "", results[0].Uploader)
+			results := ParseResponse(doc)
+			assert.Equal(t, expected, results.Page)
+		})
+
+		t.Run("first page", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<span class="active_link"><strong>1-25</strong></span>
+				| <a href="#" id="nPa"><strong>26-50</strong></a>
+				| <a href="#"><strong>51-75</strong></a>
+				| <a href="#"><strong>76-96</strong></a>
+				| <a href="#"><strong>Utolsó</strong></a>
+			</div>
+			`)
+			results := ParseResponse(doc)
+			expected := &PageInfo{
+				Current: 1,
+				Prev:    1,
+				Next:    2,
+			}
+			assert.Equal(t, expected, results.Page)
+		})
+
+		t.Run("last page", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<a href="#"><strong>Első</strong></a> 
+				| <a href="#"><strong>1-25</strong></a> 
+				| <a href="#"><strong>26-50</strong></a> 
+				| <a href="#" id="pPa"><strong>51-75</strong></a> 
+				| <span class="active_link"><strong>76-96</strong></span>
+			</div>
+			`)
+			expected := &PageInfo{
+				Current: 4,
+				Prev:    3,
+				Next:    4,
+			}
+			results := ParseResponse(doc)
+			assert.Equal(t, expected, results.Page)
 		})
 
 	})

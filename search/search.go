@@ -5,25 +5,32 @@ import (
 	"golang.org/x/net/html"
 )
 
-func ParseResults(doc *html.Node) ([]*Result, error) {
-	result := make([]*Result, 0)
+func ParseResponse(doc *html.Node) *Result {
+	return &Result{
+		Torrents: parseTorrents(doc),
+		Page:     parsePageInfo(doc),
+	}
+}
+
+func parseTorrents(doc *html.Node) []*Torrent {
+	torrents := make([]*Torrent, 0)
 	nodes := parse.GetElementsByClass(doc, "box_torrent")
 	for _, node := range nodes {
-		sr := &Result{}
+		t := &Torrent{}
 		txt := getTxtNode(node)
 		if txt != nil {
-			sr.Title = extractTitle(txt)
-			sr.AltTitle = extractAltTitle(txt)
+			t.Title = extractTitle(txt)
+			t.AltTitle = extractAltTitle(txt)
 		}
-		sr.Health = extractHealth(node)
-		sr.Peers = extractPeers(node)
-		sr.Seeds = extractSeeds(node)
-		sr.Size = extractSize(node)
-		sr.Uploaded = extractUploaded(node)
-		sr.Uploader = extractUploader(node)
-		result = append(result, sr)
+		t.Health = extractHealth(node)
+		t.Peers = extractPeers(node)
+		t.Seeds = extractSeeds(node)
+		t.Size = extractSize(node)
+		t.Uploaded = extractUploaded(node)
+		t.Uploader = extractUploader(node)
+		torrents = append(torrents, t)
 	}
-	return result, nil
+	return torrents
 }
 
 func getTxtNode(n *html.Node) *html.Node {

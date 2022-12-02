@@ -14,7 +14,7 @@ import (
 
 type Api interface {
 	Login(auth login.Auth) error
-	Search(params *search.Params) ([]*search.Result, error)
+	Search(params *search.Params) (*search.Result, error)
 }
 
 type api struct {
@@ -56,7 +56,7 @@ func (a *api) Login(auth login.Auth) error {
 	return errors.New(internal.ErrLoginUnexpectedResponse)
 }
 
-func (a *api) Search(params *search.Params) ([]*search.Result, error) {
+func (a *api) Search(params *search.Params) (*search.Result, error) {
 	res, err := a.client.PostForm(a.baseUrl+internal.UrlSearch, internal.SearchForm(params))
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (a *api) Search(params *search.Params) ([]*search.Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	return search.ParseResults(doc)
+	return search.ParseResponse(doc), nil
 }
 
 func initCookieJar(client *http.Client) {
