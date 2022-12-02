@@ -450,6 +450,38 @@ func TestApi_Search(t *testing.T) {
 			assert.Equal(t, expected, results.Page)
 		})
 
+		t.Run("invalid range separator", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<a href="#"><strong>Első</strong></a> 
+				| <span class="active_link"><strong>76..96</strong></span>
+			</div>
+			`)
+			results := ParseResponse(doc)
+			assert.Equal(t, defaultPage, results.Page.Current)
+		})
+
+		t.Run("range not a number", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<a href="#"><strong>Első</strong></a> 
+				| <span class="active_link"><strong>foo-bar</strong></span>
+			</div>
+			`)
+			results := ParseResponse(doc)
+			assert.Equal(t, defaultPage, results.Page.Current)
+		})
+
+		t.Run("missing active span", func(t *testing.T) {
+			doc := mustGetDocument(t, `
+			<div id="pager_bottom">
+				<a href="#"><strong>Első</strong></a>
+			</div>
+			`)
+			results := ParseResponse(doc)
+			assert.Equal(t, defaultPage, results.Page.Current)
+		})
+
 	})
 
 }
