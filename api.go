@@ -15,6 +15,7 @@ import (
 type Api interface {
 	Login(auth login.Auth) error
 	Search(params *search.Params) (*search.Result, error)
+	Activity()
 }
 
 type api struct {
