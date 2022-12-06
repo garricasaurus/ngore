@@ -27,7 +27,7 @@ func parseStart(node *html.Node) string {
 }
 
 func parseName(node *html.Node) string {
-	a := parse.GetFirstChildWithTagName(node, "a")
+	a := parse.GetElementByTag(node, "a")
 	if a == nil {
 		return ""
 	}
@@ -36,15 +36,11 @@ func parseName(node *html.Node) string {
 }
 
 func parseTable(doc *html.Node, info *Info) {
-	element := parse.GetFirstChildWithClassName(doc, "fobox_tartalom")
+	element := parse.GetElementByClass(doc, "fobox_tartalom")
 	if element == nil {
 		return
 	}
-	div := element.FirstChild
-	if div == nil {
-		return
-	}
-	data := parse.GetElementsByClass(div, "dd")
+	data := parse.GetElementsByClass(element, "dd")
 	if len(data) < 9 {
 		return
 	}

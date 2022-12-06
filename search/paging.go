@@ -23,11 +23,11 @@ func parsePageInfo(n *html.Node) (pi *PageInfo) {
 }
 
 func parseCurrent(n *html.Node) int {
-	span := parse.GetFirstChildWithClassName(n, "active_link")
+	span := parse.GetElementByClass(n, "active_link")
 	if span == nil {
 		return 1
 	}
-	str := parse.GetFirstChildWithTagName(span, "strong")
+	str := parse.GetElementByTag(span, "strong")
 	return calcPageNumber(parse.GetText(str))
 }
 
@@ -36,7 +36,7 @@ func parsePrev(n *html.Node) int {
 	if prev == nil {
 		return parseCurrent(n)
 	}
-	str := parse.GetFirstChildWithTagName(prev, "strong")
+	str := parse.GetElementByTag(prev, "strong")
 	return calcPageNumber(parse.GetText(str))
 }
 
@@ -45,7 +45,7 @@ func parseNext(n *html.Node) int {
 	if next == nil {
 		return parseCurrent(n)
 	}
-	str := parse.GetFirstChildWithTagName(next, "strong")
+	str := parse.GetElementByTag(next, "strong")
 	return calcPageNumber(parse.GetText(str))
 }
 

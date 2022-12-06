@@ -34,11 +34,11 @@ func parseTorrents(doc *html.Node) []*Torrent {
 }
 
 func getTxtNode(n *html.Node) *html.Node {
-	return parse.GetFirstChildWithClassName(n, "torrent_txt")
+	return parse.GetElementByClass(n, "torrent_txt")
 }
 
 func extractTitle(n *html.Node) string {
-	a := parse.GetFirstChildWithTagName(n, "a")
+	a := parse.GetElementByTag(n, "a")
 	if a != nil {
 		return titleAttr(a)
 	}
@@ -46,11 +46,11 @@ func extractTitle(n *html.Node) string {
 }
 
 func extractAltTitle(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "siterank")
+	node := parse.GetElementByClass(n, "siterank")
 	if node == nil {
 		return ""
 	}
-	span := parse.GetFirstChildWithTagName(node, "span")
+	span := parse.GetElementByTag(node, "span")
 	if span == nil {
 		return ""
 	}
@@ -58,7 +58,7 @@ func extractAltTitle(n *html.Node) string {
 }
 
 func extractHealth(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_d2")
+	node := parse.GetElementByClass(n, "box_d2")
 	if node == nil {
 		return ""
 	}
@@ -66,11 +66,11 @@ func extractHealth(n *html.Node) string {
 }
 
 func extractPeers(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_l2")
+	node := parse.GetElementByClass(n, "box_l2")
 	if node == nil {
 		return ""
 	}
-	a := parse.GetFirstChildWithTagName(node, "a")
+	a := parse.GetElementByTag(node, "a")
 	if a == nil {
 		return ""
 	}
@@ -78,11 +78,11 @@ func extractPeers(n *html.Node) string {
 }
 
 func extractSeeds(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_s2")
+	node := parse.GetElementByClass(n, "box_s2")
 	if node == nil {
 		return ""
 	}
-	a := parse.GetFirstChildWithTagName(node, "a")
+	a := parse.GetElementByTag(node, "a")
 	if a == nil {
 		return ""
 	}
@@ -90,7 +90,7 @@ func extractSeeds(n *html.Node) string {
 }
 
 func extractSize(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_meret2")
+	node := parse.GetElementByClass(n, "box_meret2")
 	if node == nil {
 		return ""
 	}
@@ -98,7 +98,7 @@ func extractSize(n *html.Node) string {
 }
 
 func extractUploaded(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_feltoltve2")
+	node := parse.GetElementByClass(n, "box_feltoltve2")
 	if node == nil {
 		return ""
 	}
@@ -106,7 +106,7 @@ func extractUploaded(n *html.Node) string {
 }
 
 func extractUploader(n *html.Node) string {
-	node := parse.GetFirstChildWithClassName(n, "box_feltolto2")
+	node := parse.GetElementByClass(n, "box_feltolto2")
 	if node == nil {
 		return ""
 	}

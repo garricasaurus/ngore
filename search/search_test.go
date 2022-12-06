@@ -60,7 +60,6 @@ func TestApi_Search(t *testing.T) {
 			</div>
 		</div>`)
 		results := ParseResponse(doc)
-
 		expected := []*Torrent{
 			{
 				Title:    "A másik Göring - megosztott testvériség",

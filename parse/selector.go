@@ -19,13 +19,13 @@ func GetElementsByClass(n *html.Node, className string) []*html.Node {
 	})
 }
 
-func GetFirstChildWithClassName(n *html.Node, className string) *html.Node {
+func GetElementByClass(n *html.Node, className string) *html.Node {
 	return traverse(n, func(n *html.Node) bool {
 		return hasClass(n, className)
 	})
 }
 
-func GetFirstChildWithTagName(n *html.Node, tag string) *html.Node {
+func GetElementByTag(n *html.Node, tag string) *html.Node {
 	return traverse(n, func(n *html.Node) bool {
 		return hasTagName(n, tag)
 	})
@@ -40,7 +40,7 @@ func GetText(n *html.Node) string {
 			sb.WriteString(" ")
 		}
 	}
-	return sb.String()
+	return strings.TrimSpace(sb.String())
 }
 
 func FindAttr(n *html.Node, key string) (string, bool) {

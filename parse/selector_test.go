@@ -53,28 +53,73 @@ func TestGetElementById(t *testing.T) {
 
 }
 
-func TestGetFirstChild(t *testing.T) {
+func TestGetElementByTag(t *testing.T) {
 
 	doc := MustParse(t, `
 		<div id="root">
-			<a id="one" href="#" />
-			<a id="two" href="#" />
+			<div><a id="one" href="#" /></div>
+			<div><a id="two" href="#" /></div>
 		</div>`)
-	root := GetElementById(doc, "root")
 
 	t.Run("find first matching child node", func(t *testing.T) {
-		n := GetFirstChildWithTagName(root, "a")
+		n := GetElementByTag(doc, "a")
 		assert.Equal(t, "one", getId(n))
 	})
 
 	t.Run("no child nodes", func(t *testing.T) {
-		doc := MustParse(t, `<div id="root" />`)
-		root := GetElementById(doc, "root")
-		assert.Nil(t, GetFirstChildWithTagName(root, "a"))
+		doc := MustParse(t, `<div />`)
+		assert.Nil(t, GetElementByTag(doc, "a"))
 	})
 
 	t.Run("no matching child node", func(t *testing.T) {
-		assert.Nil(t, GetFirstChildWithTagName(root, "p"))
+		assert.Nil(t, GetElementByTag(doc, "p"))
+	})
+
+}
+
+func TestGetElementByClass(t *testing.T) {
+
+	doc := MustParse(t, `
+		<div>
+			<div><div id="1" class="foo" /></div>
+			<div><div id="2" class="bar" /></div>
+			<div><div id="3" class="foo" /></div>
+		</div>
+	`)
+
+	t.Run("first matching child node", func(t *testing.T) {
+		n := GetElementByClass(doc, "foo")
+		assert.Equal(t, "1", getId(n))
+	})
+
+	t.Run("no child nodes", func(t *testing.T) {
+		doc := MustParse(t, ``)
+		assert.Nil(t, GetElementByClass(doc, "foo"))
+	})
+
+	t.Run("no matching child", func(t *testing.T) {
+		assert.Nil(t, GetElementByClass(doc, "moo"))
+	})
+
+}
+
+func TestGetText(t *testing.T) {
+
+	t.Run("plain text node data", func(t *testing.T) {
+		doc := MustParse(t, `<div id="root">test</div>`)
+		text := GetText(GetElementById(doc, "root"))
+		assert.Equal(t, "test", text)
+	})
+
+	t.Run("complex node data", func(t *testing.T) {
+		doc := MustParse(t, `
+		<div id="root">
+			<span>foo</span>
+			test
+			<p>bar</p>
+		</div>`)
+		text := GetText(GetElementById(doc, "root"))
+		assert.Equal(t, "test", text)
 	})
 
 }
