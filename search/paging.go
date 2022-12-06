@@ -23,11 +23,11 @@ func parsePageInfo(n *html.Node) (pi *PageInfo) {
 }
 
 func parseCurrent(n *html.Node) int {
-	span := parse.GetElementsByClass(n, "active_link")
-	if len(span) == 0 {
+	span := parse.GetFirstChildWithClassName(n, "active_link")
+	if span == nil {
 		return 1
 	}
-	str := parse.GetFirstChildWithTagName(span[0], "strong")
+	str := parse.GetFirstChildWithTagName(span, "strong")
 	return calcPageNumber(parse.GetText(str))
 }
 

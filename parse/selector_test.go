@@ -3,20 +3,19 @@ package parse
 import (
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
-	"strings"
 	"testing"
 )
 
 func TestGetElementsByClass(t *testing.T) {
 
 	t.Run("no matching nodes", func(t *testing.T) {
-		doc := mustParse(t, `<div><p>Test</p></div>`)
+		doc := MustParse(t, `<div><p>Test</p></div>`)
 		nodes := GetElementsByClass(doc, "foo")
 		assert.Equal(t, 0, len(nodes))
 	})
 
 	t.Run("multiple matches", func(t *testing.T) {
-		doc := mustParse(t, `
+		doc := MustParse(t, `
 		<div>
 			<div id="elem1" class="foo" />
 			<div class="bar" />
@@ -36,7 +35,7 @@ func TestGetElementsByClass(t *testing.T) {
 
 func TestGetElementById(t *testing.T) {
 
-	doc := mustParse(t, `
+	doc := MustParse(t, `
 		<div id="root">
 			<a id="one" href="#" />
 			<a id="two" href="#" />
@@ -56,7 +55,7 @@ func TestGetElementById(t *testing.T) {
 
 func TestGetFirstChild(t *testing.T) {
 
-	doc := mustParse(t, `
+	doc := MustParse(t, `
 		<div id="root">
 			<a id="one" href="#" />
 			<a id="two" href="#" />
@@ -69,7 +68,7 @@ func TestGetFirstChild(t *testing.T) {
 	})
 
 	t.Run("no child nodes", func(t *testing.T) {
-		doc := mustParse(t, `<div id="root" />`)
+		doc := MustParse(t, `<div id="root" />`)
 		root := GetElementById(doc, "root")
 		assert.Nil(t, GetFirstChildWithTagName(root, "a"))
 	})
@@ -78,15 +77,6 @@ func TestGetFirstChild(t *testing.T) {
 		assert.Nil(t, GetFirstChildWithTagName(root, "p"))
 	})
 
-}
-
-func mustParse(t *testing.T, s string) *html.Node {
-	t.Helper()
-	doc, err := html.Parse(strings.NewReader(s))
-	if err != nil {
-		t.Fatal(err)
-	}
-	return doc
 }
 
 func getId(n *html.Node) string {

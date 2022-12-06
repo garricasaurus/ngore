@@ -34,11 +34,7 @@ func parseTorrents(doc *html.Node) []*Torrent {
 }
 
 func getTxtNode(n *html.Node) *html.Node {
-	txtNodes := parse.GetElementsByClass(n, "torrent_txt")
-	if len(txtNodes) == 0 {
-		return nil
-	}
-	return txtNodes[0]
+	return parse.GetFirstChildWithClassName(n, "torrent_txt")
 }
 
 func extractTitle(n *html.Node) string {
@@ -50,11 +46,11 @@ func extractTitle(n *html.Node) string {
 }
 
 func extractAltTitle(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "siterank")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "siterank")
+	if node == nil {
 		return ""
 	}
-	span := parse.GetFirstChildWithTagName(nodes[0], "span")
+	span := parse.GetFirstChildWithTagName(node, "span")
 	if span == nil {
 		return ""
 	}
@@ -62,19 +58,19 @@ func extractAltTitle(n *html.Node) string {
 }
 
 func extractHealth(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_d2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_d2")
+	if node == nil {
 		return ""
 	}
-	return parse.GetText(nodes[0])
+	return parse.GetText(node)
 }
 
 func extractPeers(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_l2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_l2")
+	if node == nil {
 		return ""
 	}
-	a := parse.GetFirstChildWithTagName(nodes[0], "a")
+	a := parse.GetFirstChildWithTagName(node, "a")
 	if a == nil {
 		return ""
 	}
@@ -82,11 +78,11 @@ func extractPeers(n *html.Node) string {
 }
 
 func extractSeeds(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_s2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_s2")
+	if node == nil {
 		return ""
 	}
-	a := parse.GetFirstChildWithTagName(nodes[0], "a")
+	a := parse.GetFirstChildWithTagName(node, "a")
 	if a == nil {
 		return ""
 	}
@@ -94,27 +90,27 @@ func extractSeeds(n *html.Node) string {
 }
 
 func extractSize(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_meret2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_meret2")
+	if node == nil {
 		return ""
 	}
-	return parse.GetText(nodes[0])
+	return parse.GetText(node)
 }
 
 func extractUploaded(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_feltoltve2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_feltoltve2")
+	if node == nil {
 		return ""
 	}
-	return parse.GetText(nodes[0])
+	return parse.GetText(node)
 }
 
 func extractUploader(n *html.Node) string {
-	nodes := parse.GetElementsByClass(n, "box_feltolto2")
-	if len(nodes) == 0 {
+	node := parse.GetFirstChildWithClassName(n, "box_feltolto2")
+	if node == nil {
 		return ""
 	}
-	spans := parse.GetElementsByClass(nodes[0], "feltolto_szin")
+	spans := parse.GetElementsByClass(node, "feltolto_szin")
 	if len(spans) == 0 {
 		return ""
 	}

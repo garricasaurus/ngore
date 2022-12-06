@@ -3,6 +3,7 @@ package ngore
 import (
 	"errors"
 	"fmt"
+	"git.okki.hu/garric/ngore/activity"
 	"git.okki.hu/garric/ngore/internal"
 	"git.okki.hu/garric/ngore/login"
 	"git.okki.hu/garric/ngore/search"
@@ -15,7 +16,7 @@ import (
 type Api interface {
 	Login(auth login.Auth) error
 	Search(params *search.Params) (*search.Result, error)
-	Activity()
+	Activity() (*activity.Info, error)
 }
 
 type api struct {
@@ -73,6 +74,24 @@ func (a *api) Search(params *search.Params) (*search.Result, error) {
 		return nil, err
 	}
 	return search.ParseResponse(doc), nil
+}
+
+func (a *api) Activity() (*activity.Info, error) {
+	res, err := a.client.Get(a.baseUrl + internal.UrlActivity)
+	if err != nil {
+		return nil, err
+	}
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(internal.ErrActivityUnexpectedResponseCode, res.StatusCode)
+	}
+	doc, err := html.Parse(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return activity.ParseResponse(doc), nil
 }
 
 func initCookieJar(client *http.Client) {

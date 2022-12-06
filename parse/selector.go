@@ -19,13 +19,16 @@ func GetElementsByClass(n *html.Node, className string) []*html.Node {
 	})
 }
 
+func GetFirstChildWithClassName(n *html.Node, className string) *html.Node {
+	return traverse(n, func(n *html.Node) bool {
+		return hasClass(n, className)
+	})
+}
+
 func GetFirstChildWithTagName(n *html.Node, tag string) *html.Node {
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if c.Type == html.ElementNode && c.Data == tag {
-			return c
-		}
-	}
-	return nil
+	return traverse(n, func(n *html.Node) bool {
+		return hasTagName(n, tag)
+	})
 }
 
 func GetText(n *html.Node) string {
@@ -75,6 +78,10 @@ func traverse(n *html.Node, p matcher) *html.Node {
 		}
 	}
 	return nil
+}
+
+func hasTagName(n *html.Node, tagName string) bool {
+	return n.Type == html.ElementNode && n.Data == tagName
 }
 
 func hasClass(n *html.Node, className string) bool {

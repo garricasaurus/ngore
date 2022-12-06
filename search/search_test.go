@@ -1,16 +1,15 @@
 package search
 
 import (
+	"git.okki.hu/garric/ngore/parse"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/html"
-	"strings"
 	"testing"
 )
 
 func TestApi_Search(t *testing.T) {
 
 	t.Run("parse single match", func(t *testing.T) {
-		doc := mustGetDocument(t, `
+		doc := parse.MustParse(t, `
 		<div class="box_torrent">
 			<div class="box_alap_img">
 				<a href="/torrents.php?tipus=xvid_hun">
@@ -78,13 +77,13 @@ func TestApi_Search(t *testing.T) {
 	})
 
 	t.Run("no torrent boxes", func(t *testing.T) {
-		doc := mustGetDocument(t, `<div />`)
+		doc := parse.MustParse(t, `<div />`)
 		results := ParseResponse(doc)
 		assert.Empty(t, results.Torrents)
 	})
 
 	t.Run("no txt node", func(t *testing.T) {
-		doc := mustGetDocument(t, `
+		doc := parse.MustParse(t, `
 		<div class="box_torrent">
 			<div class="box_nagy"></div>
 		</div>`)
@@ -95,7 +94,7 @@ func TestApi_Search(t *testing.T) {
 	})
 
 	t.Run("missing title", func(t *testing.T) {
-		doc := mustGetDocument(t, `
+		doc := parse.MustParse(t, `
 		<div class="box_torrent">
 			<div class="box_nagy">
 				<div class="box_nev2">
@@ -115,7 +114,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("alt-title", func(t *testing.T) {
 
 		t.Run("missing span", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_nagy">
 					<div class="box_nev2">
@@ -135,7 +134,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing title attribute", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_nagy">
 					<div class="box_nev2">
@@ -159,7 +158,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("health", func(t *testing.T) {
 
 		t.Run("health data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_d2">test</div>
 			</div>`)
@@ -169,14 +168,14 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `<div class="box_torrent" />`)
+			doc := parse.MustParse(t, `<div class="box_torrent" />`)
 			results := ParseResponse(doc)
 			assert.Equal(t, 1, len(results.Torrents))
 			assert.Equal(t, "", results.Torrents[0].Health)
 		})
 
 		t.Run("missing content", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_d2" />
 			</div>`)
@@ -190,7 +189,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("peers", func(t *testing.T) {
 
 		t.Run("peers data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_l2"><a href="#">test</a></div>
 			</div>`)
@@ -200,14 +199,14 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `<div class="box_torrent" />`)
+			doc := parse.MustParse(t, `<div class="box_torrent" />`)
 			results := ParseResponse(doc)
 			assert.Equal(t, 1, len(results.Torrents))
 			assert.Equal(t, "", results.Torrents[0].Peers)
 		})
 
 		t.Run("missing href node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_l2"></div>
 			</div>`)
@@ -217,7 +216,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing content", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_l2"><a href="#"></a></div>
 			</div>`)
@@ -231,7 +230,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("seeds", func(t *testing.T) {
 
 		t.Run("seeds data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_s2"><a href="#">test</a></div>
 			</div>`)
@@ -241,7 +240,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">				
 			</div>`)
 			results := ParseResponse(doc)
@@ -250,7 +249,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing href node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_s2"></div>
 			</div>`)
@@ -260,7 +259,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_s2"><a href="#"></a></div>
 			</div>`)
@@ -274,7 +273,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("size", func(t *testing.T) {
 
 		t.Run("size data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_meret2">test</div>
 			</div>`)
@@ -284,7 +283,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">				
 			</div>`)
 			results := ParseResponse(doc)
@@ -293,7 +292,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_meret2"></div>
 			</div>`)
@@ -307,7 +306,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("uploaded", func(t *testing.T) {
 
 		t.Run("uploaded data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltoltve2">test</div>
 			</div>`)
@@ -317,7 +316,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("tags filtered from data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltoltve2">test1<br/>test2</div>
 			</div>`)
@@ -327,7 +326,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 			</div>`)
 			results := ParseResponse(doc)
@@ -336,7 +335,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltoltve2"></div>
 			</div>`)
@@ -350,7 +349,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("uploader", func(t *testing.T) {
 
 		t.Run("uploader data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltolto2"><span class="feltolto_szin">test</span></div>
 			</div>`)
@@ -360,7 +359,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing node", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 			</div>`)
 			results := ParseResponse(doc)
@@ -369,7 +368,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing span", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltolto2"></div>
 			</div>`)
@@ -379,7 +378,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing data", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div class="box_torrent">
 				<div class="box_feltolto2"><span class="feltolto_szin"></span></div>
 			</div>`)
@@ -393,7 +392,7 @@ func TestApi_Search(t *testing.T) {
 	t.Run("paging", func(t *testing.T) {
 
 		t.Run("parse page info", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<a href="#"><strong>Első</strong></a>
 				| <a href="#"><strong>1-25</strong></a>
@@ -413,7 +412,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("first page", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<span class="active_link"><strong>1-25</strong></span>
 				| <a href="#" id="nPa"><strong>26-50</strong></a>
@@ -432,7 +431,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("last page", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<a href="#"><strong>Első</strong></a> 
 				| <a href="#"><strong>1-25</strong></a> 
@@ -451,7 +450,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("invalid range separator", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<a href="#"><strong>Első</strong></a> 
 				| <span class="active_link"><strong>76..96</strong></span>
@@ -462,7 +461,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("range not a number", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<a href="#"><strong>Első</strong></a> 
 				| <span class="active_link"><strong>foo-bar</strong></span>
@@ -473,7 +472,7 @@ func TestApi_Search(t *testing.T) {
 		})
 
 		t.Run("missing active span", func(t *testing.T) {
-			doc := mustGetDocument(t, `
+			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
 				<a href="#"><strong>Első</strong></a>
 			</div>
@@ -484,13 +483,4 @@ func TestApi_Search(t *testing.T) {
 
 	})
 
-}
-
-func mustGetDocument(t *testing.T, htmlStr string) *html.Node {
-	t.Helper()
-	doc, err := html.Parse(strings.NewReader(htmlStr))
-	if err != nil {
-		t.Fatal(err)
-	}
-	return doc
 }
