@@ -6,24 +6,30 @@ import (
 )
 
 func ParseResponse(doc *html.Node) *Info {
-	info := &Info{}
+	info := &Info{
+		Rank:    Rank{},
+		Stats:   Stats{},
+		History: make([]TorrentActivity, 0),
+	}
 	parseTable(doc, info)
 	parseHistory(doc, info)
 	return info
 }
 
 func parseHistory(doc *html.Node, info *Info) {
-	torrents := parse.GetElementsByClass(doc, "hnr_torrents")
+	torrents := parse.GetElementsByClass(doc, "hnr_all2")
 	for _, torrent := range torrents {
-		_ = TorrentActivity{
+		item := TorrentActivity{
 			Name:  parseName(torrent),
 			Start: parseStart(torrent),
 		}
+		info.History = append(info.History, item)
 	}
 }
 
 func parseStart(node *html.Node) string {
-	return ""
+	div := parse.GetElementByClass(node, "hnr_tstart")
+	return div.Data
 }
 
 func parseName(node *html.Node) string {
@@ -36,7 +42,7 @@ func parseName(node *html.Node) string {
 }
 
 func parseTable(doc *html.Node, info *Info) {
-	element := parse.GetElementByClass(doc, "fobox_tartalom")
+	element := findTableElement(doc)
 	if element == nil {
 		return
 	}
@@ -57,4 +63,15 @@ func parseTable(doc *html.Node, info *Info) {
 		PenMonths:   parse.GetText(data[7]),
 		PenTorrents: parse.GetText(data[8]),
 	}
+}
+
+func findTableElement(doc *html.Node) *html.Node {
+	elements := parse.GetElementsByClass(doc, "fobox_tartalom")
+	for _, element := range elements {
+		n := parse.GetElementByClass(element, "dd")
+		if n != nil {
+			return element
+		}
+	}
+	return nil
 }
