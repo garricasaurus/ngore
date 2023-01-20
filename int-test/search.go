@@ -58,3 +58,17 @@ func SearchByDescription(api ngore.Api) error {
 	PrintJson(res)
 	return nil
 }
+
+func SearchWithSort(api ngore.Api) error {
+	params := &search.Params{
+		SearchPhrase: "penguin",
+		SortField:    search.ByDownloaded,
+		SortMode:     search.Descending,
+	}
+	res, err := api.Search(params)
+	if err != nil {
+		return err
+	}
+	PrintJson(res)
+	return nil
+}

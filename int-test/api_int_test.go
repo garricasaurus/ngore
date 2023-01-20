@@ -42,6 +42,10 @@ func TestApi(t *testing.T) {
 		t.Run("search by description", func(t *testing.T) {
 			assert.NoError(t, SearchByDescription(api))
 		})
+
+		t.Run("search with sort", func(t *testing.T) {
+			assert.NoError(t, SearchWithSort(api))
+		})
 	})
 
 	t.Run("activity", func(t *testing.T) {
