@@ -44,3 +44,17 @@ func SearchWithPaging(api ngore.Api) error {
 	}
 	return nil
 }
+
+func SearchByDescription(api ngore.Api) error {
+	params := &search.Params{
+		SearchPhrase: "Arctic Secrets",
+		Field:        search.Description,
+		Category:     search.SeriesSdEn,
+	}
+	res, err := api.Search(params)
+	if err != nil {
+		return err
+	}
+	PrintJson(res)
+	return nil
+}

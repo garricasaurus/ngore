@@ -31,8 +31,17 @@ func TestApi(t *testing.T) {
 	})
 
 	t.Run("search", func(t *testing.T) {
-		assert.NoError(t, SearchMovieByName(api))
-		assert.NoError(t, SearchWithPaging(api))
+		t.Run("search movie by name", func(t *testing.T) {
+			assert.NoError(t, SearchMovieByName(api))
+		})
+
+		t.Run("search with paging", func(t *testing.T) {
+			assert.NoError(t, SearchWithPaging(api))
+		})
+
+		t.Run("search by description", func(t *testing.T) {
+			assert.NoError(t, SearchByDescription(api))
+		})
 	})
 
 	t.Run("activity", func(t *testing.T) {
