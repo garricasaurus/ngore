@@ -10,6 +10,7 @@ func TestParseResponse(t *testing.T) {
 
 	t.Run("parse table data", func(t *testing.T) {
 		doc := parse.MustParse(t, `
+		<div class="fobox_tartalom"></div>
 		<div class="fobox_tartalom">
 			<div style="width:36%;float:left;">
 				<div class="dt" style="border:0;width:200px;">Napi helyezés:</div>
@@ -90,6 +91,10 @@ func TestParseResponse(t *testing.T) {
 			PenTorrents: "",
 		}
 		assert.Equal(t, expectedStats, info.Stats)
+	})
+
+	t.Run("parse history", func(t *testing.T) {
+
 	})
 
 }
