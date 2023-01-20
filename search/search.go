@@ -3,7 +3,10 @@ package search
 import (
 	"git.okki.hu/garric/ngore/parse"
 	"golang.org/x/net/html"
+	"regexp"
 )
+
+var idRegex = regexp.MustCompile(`.*id=(\d*)`)
 
 func ParseResponse(doc *html.Node) *Result {
 	return &Result{
@@ -19,6 +22,7 @@ func parseTorrents(doc *html.Node) []*Torrent {
 		t := &Torrent{}
 		txt := getTxtNode(node)
 		if txt != nil {
+			t.Id = extractId(txt)
 			t.Title = extractTitle(txt)
 			t.AltTitle = extractAltTitle(txt)
 		}
@@ -31,6 +35,18 @@ func parseTorrents(doc *html.Node) []*Torrent {
 		torrents = append(torrents, t)
 	}
 	return torrents
+}
+
+func extractId(n *html.Node) string {
+	a := parse.GetElementByTag(n, "a")
+	if a != nil {
+		href := hrefAttr(a)
+		matches := idRegex.FindAllStringSubmatch(href, -1)
+		if len(matches) == 1 {
+			return matches[0][1]
+		}
+	}
+	return ""
 }
 
 func getTxtNode(n *html.Node) *html.Node {
@@ -121,6 +137,14 @@ func titleAttr(element *html.Node) string {
 	title, ok := parse.FindAttr(element, "title")
 	if ok {
 		return title
+	}
+	return ""
+}
+
+func hrefAttr(element *html.Node) string {
+	href, ok := parse.FindAttr(element, "href")
+	if ok {
+		return href
 	}
 	return ""
 }

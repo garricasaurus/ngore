@@ -15,6 +15,7 @@ type Result struct {
 }
 
 type Torrent struct {
+	Id       string
 	Title    string
 	AltTitle string
 	Uploaded string

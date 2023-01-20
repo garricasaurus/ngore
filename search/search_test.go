@@ -62,6 +62,7 @@ func TestApi_Search(t *testing.T) {
 		results := ParseResponse(doc)
 		expected := []*Torrent{
 			{
+				Id:       "3194285",
 				Title:    "A másik Göring - megosztott testvériség",
 				AltTitle: "The Other Goering - A Divided Brotherhood",
 				Health:   "++",
@@ -92,14 +93,14 @@ func TestApi_Search(t *testing.T) {
 		assert.Equal(t, "", results.Torrents[0].AltTitle)
 	})
 
-	t.Run("missing title", func(t *testing.T) {
+	t.Run("missing attributes on anchor element", func(t *testing.T) {
 		doc := parse.MustParse(t, `
 		<div class="box_torrent">
 			<div class="box_nagy">
 				<div class="box_nev2">
 					<div class="tabla_szoveg">
 						<div class="torrent_txt">
-							<a comment="no title attribute" />							
+							<a comment="missing attributes" />							
 						</div>
 					</div>					
 				</div>				
@@ -107,6 +108,24 @@ func TestApi_Search(t *testing.T) {
 		</div>`)
 		results := ParseResponse(doc)
 		assert.Equal(t, 1, len(results.Torrents))
+		assert.Equal(t, "", results.Torrents[0].Id)
+		assert.Equal(t, "", results.Torrents[0].Title)
+	})
+
+	t.Run("missing anchor element", func(t *testing.T) {
+		doc := parse.MustParse(t, `
+		<div class="box_torrent">
+			<div class="box_nagy">
+				<div class="box_nev2">
+					<div class="tabla_szoveg">
+						<div class="torrent_txt"></div>
+					</div>					
+				</div>				
+			</div>
+		</div>`)
+		results := ParseResponse(doc)
+		assert.Equal(t, 1, len(results.Torrents))
+		assert.Equal(t, "", results.Torrents[0].Id)
 		assert.Equal(t, "", results.Torrents[0].Title)
 	})
 
