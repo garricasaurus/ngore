@@ -1,4 +1,4 @@
-package main
+package apitest
 
 import (
 	"git.okki.hu/garric/ngore"

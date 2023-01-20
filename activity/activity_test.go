@@ -94,7 +94,127 @@ func TestParseResponse(t *testing.T) {
 	})
 
 	t.Run("parse history", func(t *testing.T) {
+		doc := parse.MustParse(t, `		
+		<div class="hnr_torrents">
+			<div class="hnr_all2">
+				<div class="hnr_tname">
+					<a href="#" title="Test Title"></a>
+				</div>
+				<div class="hnr_tstart">1 órája</div>
+				<div class="hnr_tlastactive">6 perce</div>
+				<div class="hnr_tseed"><span class="stopped">Seed</span></div>
+				<div class="hnr_tup">0 B</div>
+				<div class="hnr_tdown">2.69 GiB</div>
+				<div class="hnr_ttimespent"><span class="stopped">46ó 41p</span></div>
+				<div class="hnr_tratio"><span class="stopped">0.000</span></div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+		<div class="hnr_torrents">
+			<div class="hnr_all">
+				<div class="hnr_tname">
+					<a href="#" title="Test Title 2"></a>
+				</div>
+				<div class="hnr_tstart">1 órája</div>
+				<div class="hnr_tlastactive">19 perce</div>
+				<div class="hnr_tseed"><span class="stopped">Seed</span></div>
+				<div class="hnr_tup">0 B</div>
+				<div class="hnr_tdown">3.19 GiB</div>
+				<div class="hnr_ttimespent"><span class="stopped">47ó 6p</span></div>
+				<div class="hnr_tratio"><span class="stopped">0.000</span></div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+		<div class="hnr_torrents">
+			<div class="hnr_all2">
+				<div class="hnr_tname">
+					<a href="#" title="Test Title 3"></a>
+				</div>
+				<div class="hnr_tstart">1 órája</div>
+				<div class="hnr_tlastactive">10 perce</div>
+				<div class="hnr_tseed"><span class="stopped">Seed</span></div>
+				<div class="hnr_tup">0 B</div>
+				<div class="hnr_tdown">1.77 GiB</div>
+				<div class="hnr_ttimespent"><span class="stopped">46ó 39p</span></div>
+				<div class="hnr_tratio"><span class="stopped">0.000</span></div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>	 
+		<div class="lista_lab"></div>	
+		`)
+
+		info := ParseResponse(doc)
+		history := info.History
+
+		assert.Contains(t, history, TorrentActivity{
+			Name:      "Test Title",
+			Start:     "1 órája",
+			Updated:   "6 perce",
+			Status:    "Seed",
+			Up:        "0 B",
+			Down:      "2.69 GiB",
+			Remaining: "46ó 41p",
+			Ratio:     "0.000",
+		})
+
+		assert.Contains(t, history, TorrentActivity{
+			Name:      "Test Title 2",
+			Start:     "1 órája",
+			Updated:   "19 perce",
+			Status:    "Seed",
+			Up:        "0 B",
+			Down:      "3.19 GiB",
+			Remaining: "47ó 6p",
+			Ratio:     "0.000",
+		})
+
+		assert.Contains(t, history, TorrentActivity{
+			Name:      "Test Title 3",
+			Start:     "1 órája",
+			Updated:   "10 perce",
+			Status:    "Seed",
+			Up:        "0 B",
+			Down:      "1.77 GiB",
+			Remaining: "46ó 39p",
+			Ratio:     "0.000",
+		})
 
 	})
 
+	t.Run("missing history element", func(t *testing.T) {
+		doc := parse.MustParse(t, ``)
+		info := ParseResponse(doc)
+		assert.NotNil(t, info.History)
+		assert.Len(t, info.History, 0)
+	})
+
+	t.Run("missing history attributes", func(t *testing.T) {
+		doc := parse.MustParse(t, `
+		<div class="hnr_torrents">
+			<div class="hnr_all" />
+		</div>		
+		`)
+
+		info := ParseResponse(doc)
+		history := info.History
+
+		assert.Len(t, history, 1)
+		assert.Equal(t, TorrentActivity{}, history[0])
+	})
+
+	t.Run("missing status span", func(t *testing.T) {
+		doc := parse.MustParse(t, `
+		<div class="hnr_torrents">
+			<div class="hnr_all">
+				<div class="hnr_tseed"></div>				
+			</div>
+		</div>
+		`)
+
+		info := ParseResponse(doc)
+		history := info.History
+
+		assert.Len(t, history, 1)
+		assert.Equal(t, "", history[0].Status)
+	})
 }

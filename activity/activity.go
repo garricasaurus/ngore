@@ -17,19 +17,41 @@ func ParseResponse(doc *html.Node) *Info {
 }
 
 func parseHistory(doc *html.Node, info *Info) {
-	torrents := parse.GetElementsByClass(doc, "hnr_all2")
+	torrents := parse.GetElementsByClass(doc, "hnr_all")
+	torrents = append(torrents, parse.GetElementsByClass(doc, "hnr_all2")...)
 	for _, torrent := range torrents {
 		item := TorrentActivity{
-			Name:  parseName(torrent),
-			Start: parseStart(torrent),
+			Name:      parseName(torrent),
+			Start:     parseDivText(torrent, "hnr_tstart"),
+			Updated:   parseDivText(torrent, "hnr_tlastactive"),
+			Status:    parseStatus(torrent, "hnr_tseed"),
+			Up:        parseDivText(torrent, "hnr_tup"),
+			Down:      parseDivText(torrent, "hnr_tdown"),
+			Remaining: parseStatus(torrent, "hnr_ttimespent"),
+			Ratio:     parseStatus(torrent, "hnr_tratio"),
 		}
 		info.History = append(info.History, item)
 	}
 }
 
-func parseStart(node *html.Node) string {
-	div := parse.GetElementByClass(node, "hnr_tstart")
-	return div.Data
+func parseStatus(node *html.Node, class string) string {
+	div := parse.GetElementByClass(node, class)
+	if div == nil {
+		return ""
+	}
+	span := div.FirstChild
+	if span == nil {
+		return ""
+	}
+	return parse.GetText(span)
+}
+
+func parseDivText(node *html.Node, class string) string {
+	div := parse.GetElementByClass(node, class)
+	if div == nil {
+		return ""
+	}
+	return parse.GetText(div)
 }
 
 func parseName(node *html.Node) string {

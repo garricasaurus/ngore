@@ -1,4 +1,4 @@
-module ngore-int-test
+module apitest
 
 go 1.19
 

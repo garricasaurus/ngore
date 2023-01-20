@@ -1,7 +1,8 @@
-package main
+package apitest
 
 import (
 	"fmt"
+
 	"git.okki.hu/garric/ngore"
 	"git.okki.hu/garric/ngore/search"
 )
