@@ -6,7 +6,7 @@ const LocationLoginProblem = "problema"
 
 const UrlLogin = "/login.php"
 const UrlIndex = "/index.php"
-const UrlSearch = "/torrents.php"
+const UrlTorrents = "/torrents.php"
 const UrlActivity = "/hitnrun.php"
 
 const ErrUserNotLoggedIn = "user is not logged in"
@@ -18,3 +18,4 @@ const ErrLoginKeyMissing = "login failed: unable to find login key in response"
 const ErrLoginKeyParse = "login failed: login key cannot be parsed"
 const ErrSearchUnexpectedResponseCode = "search failed: unexpected response code: %d"
 const ErrActivityUnexpectedResponseCode = "fetching activity failed: unexpected response code: %d"
+const ErrDownloadUnexpectedResponseCode = "download failed: unexpected response code: %d"

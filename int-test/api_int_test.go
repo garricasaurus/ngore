@@ -52,4 +52,8 @@ func TestApi(t *testing.T) {
 		assert.NoError(t, PrintActivity(api))
 	})
 
+	t.Run("download", func(t *testing.T) {
+		assert.NoError(t, Download(api))
+	})
+
 }

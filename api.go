@@ -8,6 +8,7 @@ import (
 	"git.okki.hu/garric/ngore/login"
 	"git.okki.hu/garric/ngore/search"
 	"golang.org/x/net/html"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
@@ -17,6 +18,7 @@ type Api interface {
 	Login(auth login.Auth) error
 	Search(params *search.Params) (*search.Result, error)
 	Activity() (*activity.Info, error)
+	Download(id string) ([]byte, error)
 }
 
 type api struct {
@@ -59,7 +61,7 @@ func (a *api) Login(auth login.Auth) error {
 }
 
 func (a *api) Search(params *search.Params) (*search.Result, error) {
-	res, err := a.client.PostForm(a.baseUrl+internal.UrlSearch, internal.SearchForm(params))
+	res, err := a.client.PostForm(a.baseUrl+internal.UrlTorrents, internal.SearchForm(params))
 	if err != nil {
 		return nil, err
 	}
@@ -92,6 +94,19 @@ func (a *api) Activity() (*activity.Info, error) {
 		return nil, err
 	}
 	return activity.ParseResponse(doc), nil
+}
+
+func (a *api) Download(id string) ([]byte, error) {
+	query := fmt.Sprintf("?action=download&id=%s&key=%s", id, a.key)
+	url := a.baseUrl + internal.UrlTorrents + query
+	res, err := a.client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf(internal.ErrDownloadUnexpectedResponseCode, res.StatusCode)
+	}
+	return io.ReadAll(res.Body)
 }
 
 func (a *api) fetchKey() error {

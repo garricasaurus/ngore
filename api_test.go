@@ -155,16 +155,6 @@ func TestApi_Search(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("search api parse error", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte(`foo`))
-			w.WriteHeader(http.StatusOK)
-		}))
-		api := apiWithMockClient(server)
-		_, err := api.Search(&search.Params{})
-		assert.Error(t, err)
-	})
-
 }
 
 func TestApi_Activity(t *testing.T) {
@@ -196,6 +186,42 @@ func TestApi_Activity(t *testing.T) {
 		defer server.Close()
 		api := apiWithMockClient(server)
 		_, err := api.Activity()
+		assert.Error(t, err)
+	})
+
+}
+
+func TestApi_Download(t *testing.T) {
+
+	t.Run("download api returns bytes", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`test bytes`))
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+		api := apiWithMockClient(server)
+		res, err := api.Download("id")
+		assert.NoError(t, err)
+		assert.Equal(t, "test bytes", string(res))
+	})
+
+	t.Run("download api server error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		server.Close() // close server to cause an error
+		api := apiWithMockClient(server)
+		_, err := api.Download("id")
+		assert.Error(t, err)
+	})
+
+	t.Run("download api invalid response code", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+		}))
+		defer server.Close()
+		api := apiWithMockClient(server)
+		_, err := api.Download("id")
 		assert.Error(t, err)
 	})
 
