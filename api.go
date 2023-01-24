@@ -21,6 +21,7 @@ type Api interface {
 
 type api struct {
 	baseUrl string
+	key     string
 	client  *http.Client
 }
 
@@ -52,8 +53,7 @@ func (a *api) Login(auth login.Auth) error {
 		return errors.New(internal.ErrLoginInvalidCredentials)
 	}
 	if internal.IsSuccessfulLogin(res) {
-		return nil
-
+		return a.fetchKey()
 	}
 	return errors.New(internal.ErrLoginUnexpectedResponse)
 }
@@ -92,6 +92,19 @@ func (a *api) Activity() (*activity.Info, error) {
 		return nil, err
 	}
 	return activity.ParseResponse(doc), nil
+}
+
+func (a *api) fetchKey() error {
+	res, err := a.client.Get(a.baseUrl + internal.UrlIndex)
+	if err != nil {
+		return errors.New(internal.ErrLoginUnableToFetchIndex)
+	}
+	doc, err := html.Parse(res.Body)
+	if err != nil {
+		return err
+	}
+	a.key, err = internal.ExtractKey(doc)
+	return err
 }
 
 func initCookieJar(client *http.Client) {

@@ -25,6 +25,12 @@ func GetElementByClass(n *html.Node, className string) *html.Node {
 	})
 }
 
+func GetElementsByTag(n *html.Node, tag string) []*html.Node {
+	return getElements(n, func(n *html.Node) bool {
+		return hasTagName(n, tag)
+	})
+}
+
 func GetElementByTag(n *html.Node, tag string) *html.Node {
 	return traverse(n, func(n *html.Node) bool {
 		return hasTagName(n, tag)

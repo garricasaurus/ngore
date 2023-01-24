@@ -17,7 +17,6 @@ func parsePageInfo(n *html.Node) (pi *PageInfo) {
 		pi.Current = parseCurrent(n)
 		pi.Prev = parsePrev(n)
 		pi.Next = parseNext(n)
-
 	}
 	return
 }

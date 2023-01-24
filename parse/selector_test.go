@@ -77,6 +77,30 @@ func TestGetElementByTag(t *testing.T) {
 
 }
 
+func TestGetElementsByTag(t *testing.T) {
+
+	doc := MustParse(t, `
+		<html>
+			<link id="a" rel="a" />
+			<link id="b" rel="b" />
+			<link id="c" rel="c" />
+			<body></body>
+		</html>`)
+
+	t.Run("matching element list", func(t *testing.T) {
+		elements := GetElementsByTag(doc, "link")
+		assert.Len(t, elements, 3)
+		assert.Equal(t, "a", getId(elements[0]))
+		assert.Equal(t, "b", getId(elements[1]))
+		assert.Equal(t, "c", getId(elements[2]))
+	})
+
+	t.Run("no matching elements", func(t *testing.T) {
+		assert.Empty(t, GetElementsByTag(doc, "div"))
+	})
+
+}
+
 func TestGetElementByClass(t *testing.T) {
 
 	doc := MustParse(t, `
