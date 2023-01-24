@@ -100,6 +100,9 @@ func (a *api) Download(id string) ([]byte, error) {
 	query := fmt.Sprintf("?action=download&id=%s&key=%s", id, a.key)
 	url := a.baseUrl + internal.UrlTorrents + query
 	res, err := a.client.Get(url)
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
+	}
 	if err != nil {
 		return nil, err
 	}
