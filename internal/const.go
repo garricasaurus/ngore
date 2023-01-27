@@ -10,6 +10,7 @@ const UrlTorrents = "/torrents.php"
 const UrlActivity = "/hitnrun.php"
 
 const ErrUserNotLoggedIn = "user is not logged in"
+const ErrApiKeyEmpty = "api key is empty"
 const ErrLoginMissingCredentials = "login failed: user name or password is empty"
 const ErrLoginInvalidCredentials = "login failed: invalid BasicAuth"
 const ErrLoginUnexpectedResponse = "login failed: unexpected response"

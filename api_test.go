@@ -199,8 +199,9 @@ func TestApi_Download(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		defer server.Close()
-		api := apiWithMockClient(server)
-		res, err := api.Download("id")
+		a := apiWithMockClient(server)
+		a.(*api).key = "foo"
+		res, err := a.Download("id")
 		assert.NoError(t, err)
 		assert.Equal(t, "test bytes", string(res))
 	})
@@ -210,8 +211,9 @@ func TestApi_Download(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 		}))
 		server.Close() // close server to cause an error
-		api := apiWithMockClient(server)
-		_, err := api.Download("id")
+		a := apiWithMockClient(server)
+		a.(*api).key = "foo"
+		_, err := a.Download("id")
 		assert.Error(t, err)
 	})
 
@@ -220,8 +222,20 @@ func TestApi_Download(t *testing.T) {
 			w.WriteHeader(http.StatusBadRequest)
 		}))
 		defer server.Close()
-		api := apiWithMockClient(server)
-		_, err := api.Download("id")
+		a := apiWithMockClient(server)
+		a.(*api).key = "foo"
+		_, err := a.Download("id")
+		assert.Error(t, err)
+	})
+
+	t.Run("download with api key missing", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+		a := apiWithMockClient(server)
+		a.(*api).key = ""
+		_, err := a.Download("id")
 		assert.Error(t, err)
 	})
 

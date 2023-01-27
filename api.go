@@ -97,14 +97,17 @@ func (a *api) Activity() (*activity.Info, error) {
 }
 
 func (a *api) Download(id string) ([]byte, error) {
+	if a.key == "" {
+		return nil, errors.New(internal.ErrApiKeyEmpty)
+	}
 	query := fmt.Sprintf("?action=download&id=%s&key=%s", id, a.key)
 	url := a.baseUrl + internal.UrlTorrents + query
 	res, err := a.client.Get(url)
-	if internal.IsLoginRequired(res) {
-		return nil, errors.New(internal.ErrUserNotLoggedIn)
-	}
 	if err != nil {
 		return nil, err
+	}
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
 	}
 	if res.StatusCode != 200 {
 		return nil, fmt.Errorf(internal.ErrDownloadUnexpectedResponseCode, res.StatusCode)
