@@ -1,33 +1,33 @@
 package activity
 
 type Info struct {
-	Rank        Rank
-	Stats       Stats
-	CanDownload string
-	History     []TorrentActivity
+	Rank        Rank              `json:"rank"`
+	Stats       Stats             `json:"stats"`
+	CanDownload string            `json:"canDownload"`
+	History     []TorrentActivity `json:"history"`
 }
 
 type Rank struct {
-	Daily     string
-	Weekly    string
-	Monthly   string
-	PrevMonth string
+	Daily     string `json:"daily"`
+	Weekly    string `json:"weekly"`
+	Monthly   string `json:"monthly"`
+	PrevMonth string `json:"prevMonth"`
 }
 
 type Stats struct {
-	Current     string
-	Allowed     string
-	PenMonths   string
-	PenTorrents string
+	Current     string `json:"current"`
+	Allowed     string `json:"allowed"`
+	PenMonths   string `json:"penMonths"`
+	PenTorrents string `json:"penTorrents"`
 }
 
 type TorrentActivity struct {
-	Name      string
-	Start     string
-	Updated   string
-	Status    string
-	Up        string
-	Down      string
-	Remaining string
-	Ratio     string
+	Name      string `json:"name"`
+	Start     string `json:"start"`
+	Updated   string `json:"updated"`
+	Status    string `json:"status"`
+	Up        string `json:"up"`
+	Down      string `json:"down"`
+	Remaining string `json:"remaining"`
+	Ratio     string `json:"ratio"`
 }

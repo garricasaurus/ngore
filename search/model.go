@@ -1,35 +1,35 @@
 package search
 
 type Params struct {
-	SearchPhrase string
-	Field        Field
-	Category     Category
-	SortField    SortField
-	SortMode     SortMode
-	Page         int
+	SearchPhrase string    `json:"searchPhrase"`
+	Field        Field     `json:"field"`
+	Category     Category  `json:"category"`
+	SortField    SortField `json:"sortField"`
+	SortMode     SortMode  `json:"sortMode"`
+	Page         int       `json:"page"`
 }
 
 type Result struct {
-	Torrents []*Torrent
-	Page     *PageInfo
+	Torrents []*Torrent `json:"torrents"`
+	Page     *PageInfo  `json:"page"`
 }
 
 type Torrent struct {
-	Id       string
-	Title    string
-	AltTitle string
-	Uploaded string
-	Uploader string
-	Size     string
-	Health   string
-	Seeds    string
-	Peers    string
+	Id       string `json:"id"`
+	Title    string `json:"title"`
+	AltTitle string `json:"altTitle"`
+	Uploaded string `json:"uploaded"`
+	Uploader string `json:"uploader"`
+	Size     string `json:"size"`
+	Health   string `json:"health"`
+	Seeds    string `json:"seeds"`
+	Peers    string `json:"peers"`
 }
 
 type PageInfo struct {
-	Current int
-	Prev    int
-	Next    int
+	Current int `json:"current"`
+	Prev    int `json:"prev"`
+	Next    int `json:"next"`
 }
 
 func (p *PageInfo) HasMore() bool {
