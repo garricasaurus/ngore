@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"git.okki.hu/garric/ngore/activity"
+	"git.okki.hu/garric/ngore/details"
 	"git.okki.hu/garric/ngore/internal"
 	"git.okki.hu/garric/ngore/login"
 	"git.okki.hu/garric/ngore/search"
@@ -18,6 +19,7 @@ type Api interface {
 	Login(auth login.Auth) error
 	Search(params *search.Params) (*search.Result, error)
 	Activity() (*activity.Info, error)
+	Details(id string) (*details.Details, error)
 	Download(id string) ([]byte, error)
 }
 
@@ -109,10 +111,30 @@ func (a *api) Download(id string) ([]byte, error) {
 	if internal.IsLoginRequired(res) {
 		return nil, errors.New(internal.ErrUserNotLoggedIn)
 	}
-	if res.StatusCode != 200 {
+	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf(internal.ErrDownloadUnexpectedResponseCode, res.StatusCode)
 	}
 	return io.ReadAll(res.Body)
+}
+
+func (a *api) Details(id string) (*details.Details, error) {
+	query := fmt.Sprintf("?action=details&id=%s", id)
+	url := a.baseUrl + internal.UrlTorrents + query
+	res, err := a.client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(internal.ErrDetailsUnexpectedResponseCode, res.StatusCode)
+	}
+	doc, err := html.Parse(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return details.ParseDetails(doc), nil
 }
 
 func (a *api) fetchKey() error {

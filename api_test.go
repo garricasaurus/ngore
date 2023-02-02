@@ -241,6 +241,52 @@ func TestApi_Download(t *testing.T) {
 
 }
 
+func TestApi_Details(t *testing.T) {
+
+	t.Run("details client error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		server.Close() // close server to cause an error in the client
+		a := apiWithMockClient(server)
+		_, err := a.Details("foo")
+		assert.Error(t, err)
+	})
+
+	t.Run("details login required", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, internal.LocationLogin, http.StatusFound)
+		}))
+		defer server.Close()
+		api := apiWithMockClient(server)
+		_, err := api.Details("foo")
+		assert.ErrorContains(t, err, internal.ErrUserNotLoggedIn)
+	})
+
+	t.Run("details unexpected status code", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+		}))
+		defer server.Close()
+		api := apiWithMockClient(server)
+		_, err := api.Details("foo")
+		assert.Error(t, err)
+	})
+
+	t.Run("details parsing", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte(`<html></html>`))
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+		api := apiWithMockClient(server)
+		details, err := api.Details("foo")
+		assert.NoError(t, err)
+		assert.NotNil(t, details)
+	})
+
+}
+
 func apiWithMockClient(mockServer *httptest.Server) Api {
 	return New(mockServer.Client(), mockServer.URL)
 }
