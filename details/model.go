@@ -11,4 +11,6 @@ type Details struct {
 	ImdbRating  string
 	ImdbLink    string
 	OtherLink   string
+	CoverImage  string
+	OtherImages []string
 }

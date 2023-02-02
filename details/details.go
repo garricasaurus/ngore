@@ -21,6 +21,8 @@ func ParseDetails(doc *html.Node) *Details {
 		ImdbLink:    parseImdbLink(doc),
 		Length:      parseLength(doc),
 		OtherLink:   parseOtherLink(doc),
+		CoverImage:  parseCoverImage(doc),
+		OtherImages: parseOtherImages(doc),
 	}
 }
 
@@ -78,6 +80,42 @@ func parseLength(n *html.Node) string {
 
 func parseOtherLink(n *html.Node) string {
 	return parseLink(n, "Egyéb link:")
+}
+
+func parseCoverImage(n *html.Node) string {
+	div := parse.GetElementByClass(n, "torrent_leiras")
+	if div == nil {
+		return ""
+	}
+	img := parse.GetElementByTag(div, "img")
+	if img == nil {
+		return ""
+	}
+	src, ok := parse.FindAttr(img, "src")
+	if !ok {
+		return ""
+	}
+	return src
+}
+
+func parseOtherImages(n *html.Node) []string {
+	res := make([]string, 0)
+	div := parse.GetElementByClass(n, "fobox_tartalom")
+	if div == nil {
+		return res
+	}
+	el := parse.GetElementByTag(div, "center")
+	if el == nil {
+		return res
+	}
+	images := parse.GetElementsByTag(el, "img")
+	for _, img := range images {
+		src, ok := parse.FindAttr(img, "src")
+		if ok {
+			res = append(res, src)
+		}
+	}
+	return res
 }
 
 func parseTableData(n *html.Node, label string) string {
