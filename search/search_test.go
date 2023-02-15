@@ -1,9 +1,10 @@
 package search
 
 import (
+	"testing"
+
 	"git.okki.hu/garric/ngore/parse"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestApi_Search(t *testing.T) {
@@ -41,7 +42,6 @@ func TestApi_Search(t *testing.T) {
 							</div>
 						</div>
 					</div>
-		
 					<div class="torrent_ok" title="A torrent megfelel a szabályoknak"></div>
 				</div>
 				<div class="users_box_sepa"></div>
@@ -100,10 +100,10 @@ func TestApi_Search(t *testing.T) {
 				<div class="box_nev2">
 					<div class="tabla_szoveg">
 						<div class="torrent_txt">
-							<a comment="missing attributes" />							
+							<a comment="missing attributes" />
 						</div>
-					</div>					
-				</div>				
+					</div>
+				</div>
 			</div>
 		</div>`)
 		results := ParseResponse(doc)
@@ -119,8 +119,8 @@ func TestApi_Search(t *testing.T) {
 				<div class="box_nev2">
 					<div class="tabla_szoveg">
 						<div class="torrent_txt"></div>
-					</div>					
-				</div>				
+					</div>
+				</div>
 			</div>
 		</div>`)
 		results := ParseResponse(doc)
@@ -142,8 +142,8 @@ func TestApi_Search(t *testing.T) {
 									<div class="siterank" />
 								</div>
 							</div>
-						</div>					
-					</div>				
+						</div>
+					</div>
 				</div>
 			</div>`)
 			results := ParseResponse(doc)
@@ -162,8 +162,8 @@ func TestApi_Search(t *testing.T) {
 									<div class="siterank"><span comment="no title attribute"></span>
 								</div>
 							</div>
-						</div>					
-					</div>				
+						</div>
+					</div>
 				</div>
 			</div>`)
 			results := ParseResponse(doc)
@@ -259,7 +259,7 @@ func TestApi_Search(t *testing.T) {
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := parse.MustParse(t, `
-			<div class="box_torrent">				
+			<div class="box_torrent">
 			</div>`)
 			results := ParseResponse(doc)
 			assert.Equal(t, 1, len(results.Torrents))
@@ -302,7 +302,7 @@ func TestApi_Search(t *testing.T) {
 
 		t.Run("missing node", func(t *testing.T) {
 			doc := parse.MustParse(t, `
-			<div class="box_torrent">				
+			<div class="box_torrent">
 			</div>`)
 			results := ParseResponse(doc)
 			assert.Equal(t, 1, len(results.Torrents))
@@ -415,7 +415,7 @@ func TestApi_Search(t *testing.T) {
 				<a href="#"><strong>Első</strong></a>
 				| <a href="#"><strong>1-25</strong></a>
 				| <a href="#" id="pPa"><strong>26-50</strong></a>
-				| <span class="active_link"><strong>51-75</strong></span> 
+				| <span class="active_link"><strong>51-75</strong></span>
 				| <a href="#" id="nPa"><strong>76-96</strong></a>
 				| <a href="#"><strong>Utolsó</strong></a>
 			</div>
@@ -451,10 +451,10 @@ func TestApi_Search(t *testing.T) {
 		t.Run("last page", func(t *testing.T) {
 			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
-				<a href="#"><strong>Első</strong></a> 
-				| <a href="#"><strong>1-25</strong></a> 
-				| <a href="#"><strong>26-50</strong></a> 
-				| <a href="#" id="pPa"><strong>51-75</strong></a> 
+				<a href="#"><strong>Első</strong></a>
+				| <a href="#"><strong>1-25</strong></a>
+				| <a href="#"><strong>26-50</strong></a>
+				| <a href="#" id="pPa"><strong>51-75</strong></a>
 				| <span class="active_link"><strong>76-96</strong></span>
 			</div>
 			`)
@@ -470,7 +470,7 @@ func TestApi_Search(t *testing.T) {
 		t.Run("invalid range separator", func(t *testing.T) {
 			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
-				<a href="#"><strong>Első</strong></a> 
+				<a href="#"><strong>Első</strong></a>
 				| <span class="active_link"><strong>76..96</strong></span>
 			</div>
 			`)
@@ -481,7 +481,7 @@ func TestApi_Search(t *testing.T) {
 		t.Run("range not a number", func(t *testing.T) {
 			doc := parse.MustParse(t, `
 			<div id="pager_bottom">
-				<a href="#"><strong>Első</strong></a> 
+				<a href="#"><strong>Első</strong></a>
 				| <span class="active_link"><strong>foo-bar</strong></span>
 			</div>
 			`)

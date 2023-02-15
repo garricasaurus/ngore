@@ -1,9 +1,10 @@
 package search
 
 import (
+	"regexp"
+
 	"git.okki.hu/garric/ngore/parse"
 	"golang.org/x/net/html"
-	"regexp"
 )
 
 var idRegex = regexp.MustCompile(`.*id=(\d*)`)
@@ -50,7 +51,11 @@ func extractId(n *html.Node) string {
 }
 
 func getTxtNode(n *html.Node) *html.Node {
-	return parse.GetElementByClass(n, "torrent_txt")
+	node := parse.GetElementByClass(n, "torrent_txt")
+	if node == nil {
+		node = parse.GetElementByClass(n, "torrent_txt2")
+	}
+	return node
 }
 
 func extractTitle(n *html.Node) string {
