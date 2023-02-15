@@ -1,10 +1,11 @@
 package internal
 
 import (
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/search"
 	"net/url"
 	"strconv"
+
+	"git.okki.hu/garric/ngore/login"
+	"git.okki.hu/garric/ngore/search"
 )
 
 func AuthForm(a login.Auth) url.Values {
@@ -15,11 +16,14 @@ func AuthForm(a login.Auth) url.Values {
 }
 
 func SearchForm(s *search.Params) url.Values {
+	if s.Page < 1 {
+		s.Page = 1
+	}
 	val := url.Values{}
 	val.Set("mire", s.SearchPhrase)
 	val.Set("miben", s.Field.String())
 	val.Set("tipus", s.Category.String())
-	val.Set("oldal", strconv.Itoa(s.Page+1))
+	val.Set("oldal", strconv.Itoa(s.Page))
 
 	// do not apply sorting by name when we are searching by description
 	// this is due to a bug in the website
