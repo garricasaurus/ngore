@@ -3,22 +3,25 @@ package ngore
 import (
 	"errors"
 	"fmt"
-	"git.okki.hu/garric/ngore/activity"
-	"git.okki.hu/garric/ngore/details"
-	"git.okki.hu/garric/ngore/internal"
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/search"
-	"golang.org/x/net/html"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"time"
+
+	"git.okki.hu/garric/ngore/activity"
+	"git.okki.hu/garric/ngore/details"
+	"git.okki.hu/garric/ngore/internal"
+	"git.okki.hu/garric/ngore/login"
+	"git.okki.hu/garric/ngore/recommended"
+	"git.okki.hu/garric/ngore/search"
+	"golang.org/x/net/html"
 )
 
 type Api interface {
 	Login(auth login.Auth) error
 	Search(params *search.Params) (*search.Result, error)
 	Activity() (*activity.Info, error)
+	Recommendations() (*recommended.Recommendations, error)
 	Details(id string) (*details.Details, error)
 	Download(id string) ([]byte, error)
 }
@@ -96,6 +99,24 @@ func (a *api) Activity() (*activity.Info, error) {
 		return nil, err
 	}
 	return activity.ParseResponse(doc), nil
+}
+
+func (a *api) Recommendations() (*recommended.Recommendations, error) {
+	res, err := a.client.Get(a.baseUrl + internal.UrlRecommended)
+	if err != nil {
+		return nil, err
+	}
+	if internal.IsLoginRequired(res) {
+		return nil, errors.New(internal.ErrUserNotLoggedIn)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(internal.ErrActivityUnexpectedResponseCode, res.StatusCode)
+	}
+	doc, err := html.Parse(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return recommended.ParseRecommendations(doc), nil
 }
 
 func (a *api) Download(id string) ([]byte, error) {

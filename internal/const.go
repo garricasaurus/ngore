@@ -8,6 +8,7 @@ const UrlLogin = "/login.php"
 const UrlIndex = "/index.php"
 const UrlTorrents = "/torrents.php"
 const UrlActivity = "/hitnrun.php"
+const UrlRecommended = "/recommended.php"
 
 const ErrUserNotLoggedIn = "user is not logged in"
 const ErrApiKeyEmpty = "api key is empty"

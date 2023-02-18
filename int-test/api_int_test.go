@@ -1,11 +1,12 @@
 package apitest
 
 import (
+	"os"
+	"testing"
+
 	"git.okki.hu/garric/ngore"
 	"git.okki.hu/garric/ngore/login"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 const EnvUser = "NC_USER"
@@ -58,6 +59,10 @@ func TestApi(t *testing.T) {
 
 	t.Run("details", func(t *testing.T) {
 		assert.NoError(t, PrintDetails(api))
+	})
+
+	t.Run("recommendations", func(t *testing.T) {
+		assert.NoError(t, PrintRecommendations(api))
 	})
 
 }
