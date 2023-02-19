@@ -1,6 +1,7 @@
 package details
 
 type Details struct {
+	Type        string   `json:"type"`
 	Title       string   `json:"title"`
 	ReleaseYear string   `json:"releaseYear"`
 	Director    string   `json:"director"`

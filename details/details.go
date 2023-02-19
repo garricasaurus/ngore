@@ -1,33 +1,76 @@
 package details
 
 import (
-	"git.okki.hu/garric/ngore/parse"
-	"golang.org/x/net/html"
 	"regexp"
 	"strings"
+
+	"git.okki.hu/garric/ngore/parse"
+	"golang.org/x/net/html"
 )
 
 var detailLinkRegex = regexp.MustCompile(`.*\?(http.*)`)
 
 func ParseDetails(doc *html.Node) *Details {
-	return &Details{
-		Title:       parseTitle(doc),
-		ReleaseYear: parseReleaseYear(doc),
-		Director:    parseDirector(doc),
-		Actors:      parseActors(doc),
-		Country:     parseCountry(doc),
-		Labels:      parseLabels(doc),
-		ImdbRating:  parseImdbRating(doc),
-		ImdbLink:    parseImdbLink(doc),
-		Length:      parseLength(doc),
-		OtherLink:   parseOtherLink(doc),
-		CoverImage:  parseCoverImage(doc),
-		OtherImages: parseOtherImages(doc),
+	result := &Details{
+		Type: parseType(doc),
 	}
+	switch result.Type {
+	case "sorozat":
+		fallthrough
+	case "film":
+		result.Title = parseTitle(doc)
+		result.ReleaseYear = parseReleaseYear(doc)
+		result.Director = parseDirector(doc)
+		result.Actors = parseActors(doc)
+		result.Country = parseCountry(doc)
+		result.Labels = parseLabels(doc)
+		result.ImdbRating = parseImdbRating(doc)
+		result.ImdbLink = parseImdbLink(doc)
+		result.Length = parseLength(doc)
+		result.OtherLink = parseOtherLink(doc)
+		result.CoverImage = parseCoverImage(doc)
+		result.OtherImages = parseOtherImages(doc)
+	case "játék":
+		fallthrough
+	case "program":
+		result.Title = parseGameTitle(doc)
+		result.CoverImage = parseCoverImage(doc)
+		result.OtherImages = parseOtherImages(doc)
+	case "zene":
+		result.Title = parseGameTitle(doc)
+		result.CoverImage = parseCoverImage(doc)
+		result.Labels = parseLabels(doc)
+	case "ebook":
+		result.Title = parseGameTitle(doc)
+		result.CoverImage = parseCoverImage(doc)
+		result.OtherImages = parseOtherImages(doc)
+		result.Labels = parseLabels(doc)
+	}
+	return result
+}
+
+func parseType(n *html.Node) string {
+	div := parse.GetElementByClass(n, "torrent_reszletek")
+	if div == nil {
+		return ""
+	}
+	a := parse.GetElementByTag(div, "a")
+	if a == nil {
+		return ""
+	}
+	return strings.ToLower(parse.GetText(a))
 }
 
 func parseTitle(n *html.Node) string {
 	div := parse.GetElementByClass(n, "infobar_title")
+	if div == nil {
+		return ""
+	}
+	return strings.TrimSpace(parse.GetText(div))
+}
+
+func parseGameTitle(n *html.Node) string {
+	div := parse.GetElementByClass(n, "torrent_reszletek_cim")
 	if div == nil {
 		return ""
 	}
