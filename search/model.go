@@ -63,30 +63,30 @@ func (s Field) String() string {
 type Category int
 
 const (
-	MovieSdEn Category = iota
-	MovieSdHu
-	MovieDvdEn
+	MovieSdHu Category = iota
+	MovieSdEn
 	MovieDvdHu
-	MovieDvd9En
+	MovieDvdEn
 	MovieDvd9Hu
-	MovieHdEn
+	MovieDvd9En
 	MovieHdHu
-	SeriesSdEn
+	MovieHdEn
 	SeriesSdHu
-	SeriesDvdEn
+	SeriesSdEn
 	SeriesDvdHu
-	SeriesHdEn
+	SeriesDvdEn
 	SeriesHdHu
-	Mp3En
+	SeriesHdEn
 	Mp3Hu
-	LosslessEn
+	Mp3En
 	LosslessHu
+	LosslessEn
 	Clip
 	GameIso
 	GameRip
 	Console
-	EbookEn
 	EbookHu
+	EbookEn
 	Iso
 	Misc
 	Mobile
