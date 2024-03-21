@@ -3,8 +3,8 @@ package apitest
 import (
 	"errors"
 	"fmt"
-	"git.okki.hu/garric/ngore"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore"
+	"github.com/gar-r/ngore/search"
 )
 
 func Download(api ngore.Api) error {

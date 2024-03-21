@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore/login"
+	"github.com/gar-r/ngore/search"
 )
 
 func AuthForm(a login.Auth) url.Values {

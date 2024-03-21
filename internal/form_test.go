@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore/login"
+	"github.com/gar-r/ngore/search"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

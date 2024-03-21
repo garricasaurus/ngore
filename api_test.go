@@ -1,9 +1,9 @@
 package ngore
 
 import (
-	"git.okki.hu/garric/ngore/internal"
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore/internal"
+	"github.com/gar-r/ngore/login"
+	"github.com/gar-r/ngore/search"
 	"net/http"
 	"net/http/httptest"
 	"testing"

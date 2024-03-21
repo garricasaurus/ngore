@@ -1,6 +1,6 @@
 package apitest
 
-import "git.okki.hu/garric/ngore"
+import "github.com/gar-r/ngore"
 
 func PrintRecommendations(api ngore.Api) error {
 	rec, err := api.Recommendations()

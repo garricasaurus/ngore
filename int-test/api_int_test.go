@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"git.okki.hu/garric/ngore"
-	"git.okki.hu/garric/ngore/login"
+	"github.com/gar-r/ngore"
+	"github.com/gar-r/ngore/login"
 	"github.com/stretchr/testify/assert"
 )
 

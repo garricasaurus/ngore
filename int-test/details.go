@@ -1,6 +1,6 @@
 package apitest
 
-import "git.okki.hu/garric/ngore"
+import "github.com/gar-r/ngore"
 
 func PrintDetails(api ngore.Api) error {
 	details, err := api.Details("3372123")

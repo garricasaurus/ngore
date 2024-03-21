@@ -3,8 +3,8 @@ package apitest
 import (
 	"fmt"
 
-	"git.okki.hu/garric/ngore"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore"
+	"github.com/gar-r/ngore/search"
 )
 
 func SearchMovieByName(api ngore.Api) error {

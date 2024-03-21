@@ -1,7 +1,7 @@
 package activity
 
 import (
-	"git.okki.hu/garric/ngore/parse"
+	"github.com/gar-r/ngore/parse"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

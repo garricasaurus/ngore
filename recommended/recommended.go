@@ -3,7 +3,7 @@ package recommended
 import (
 	"regexp"
 
-	"git.okki.hu/garric/ngore/parse"
+	"github.com/gar-r/ngore/parse"
 	"golang.org/x/net/html"
 )
 

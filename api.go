@@ -8,12 +8,12 @@ import (
 	"net/http/cookiejar"
 	"time"
 
-	"git.okki.hu/garric/ngore/activity"
-	"git.okki.hu/garric/ngore/details"
-	"git.okki.hu/garric/ngore/internal"
-	"git.okki.hu/garric/ngore/login"
-	"git.okki.hu/garric/ngore/recommended"
-	"git.okki.hu/garric/ngore/search"
+	"github.com/gar-r/ngore/activity"
+	"github.com/gar-r/ngore/details"
+	"github.com/gar-r/ngore/internal"
+	"github.com/gar-r/ngore/login"
+	"github.com/gar-r/ngore/recommended"
+	"github.com/gar-r/ngore/search"
 	"golang.org/x/net/html"
 )
 

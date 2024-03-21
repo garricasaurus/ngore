@@ -3,7 +3,7 @@ module apitest
 go 1.19
 
 require (
-	git.okki.hu/garric/ngore v0.9.0
+	github.com/gar-r/ngore v0.9.0
 	github.com/stretchr/testify v1.8.1
 )
 

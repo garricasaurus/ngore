@@ -1,7 +1,7 @@
 package apitest
 
 import (
-	"git.okki.hu/garric/ngore"
+	"github.com/gar-r/ngore"
 )
 
 func PrintActivity(api ngore.Api) error {

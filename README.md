@@ -11,13 +11,13 @@ To import the library, make sure you are using a recent version of Go.
 Use `go get` to add a dependency to the latest release:
 
 ```
-go get git.okki.hu/garric/ngore@latest
+go get github.com/gar-r/ngore@latest
 ```
 
 Add a dependency to a specific version:
 
 ```
- go get git.okki.hu/garric/ngore@v0.9.1
+ go get github.com/gar-r/ngore@v0.9.1
 ```
 
 ## Initialize the api

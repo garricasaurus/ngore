@@ -1,4 +1,4 @@
-module git.okki.hu/garric/ngore
+module github.com/gar-r/ngore
 
 go 1.19
 
